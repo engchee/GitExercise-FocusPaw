@@ -3,7 +3,16 @@ import tkinter.font as tKFont
 
 window = tk.Tk()
 window.title("FocusPaw")
-window.geometry("500x500")
+
+app_width = 500
+app_height = 500
+
+screen_width = window.winfo_screenwidth()
+screen_height = window.winfo_screenheight()
+
+x = (screen_width - app_width) // 2
+y = (screen_height - app_height) // 2
+window.geometry(f"{app_width}x{app_height}+{x}+{y}")
 
 title_font = tKFont.Font(
     family="Courier", 
