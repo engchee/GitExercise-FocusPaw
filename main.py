@@ -11,5 +11,5 @@ height = 400
 
 
 
-work_minutes = 25
+
 
