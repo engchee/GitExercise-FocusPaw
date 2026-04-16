@@ -42,8 +42,3 @@ window.mainloop()
 
 
 
-
-
-
-
-
