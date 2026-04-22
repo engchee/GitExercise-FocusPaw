@@ -83,3 +83,5 @@ btn_give_up = tk.Button(
     command=give_up
 )
 btn_give_up.grid(column=2, row=3)
+
+window.mainloop()
