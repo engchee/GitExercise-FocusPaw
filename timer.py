@@ -28,9 +28,15 @@ x = (screen_width - app_width) // 2
 y = (screen_height - app_height) // 2
 window.geometry(f"{app_width}x{app_height}+{x}+{y}")
 
+window.grid_columnconfigure(0, weight=1)
+window.grid_columnconfigure(1, weight=1)
+window.grid_columnconfigure(2, weight=1)
+window.grid_columnconfigure([0, 1, 2], weight=1)
+window.grid_rowconfigure(2, weight=1)
+
 #font style
 button_font = tkFont.Font(
-    family="Monospace",
+    family="Consolas",
     size=12,
     weight="bold"
 )
@@ -38,7 +44,7 @@ button_font = tkFont.Font(
 title_font = tkFont.Font(
     family="Courier",
     size=46,
-    weight="bold"
+    weight="bold",
 )
 
 #title and status label
@@ -47,14 +53,14 @@ title_label = tk.Label(
     text="Timer",
     font=title_font
 )
-title_label.grid(column=1, row=0)
+title_label.grid(column=1, row=0, pady=(30, 0))
 
 status_label = tk.Label(
     window,
     text="Are you ready to FOCUS?",
-    font=("Monospace", 14)
+    font=("Consolas", 14)
 )
-status_label.grid(column=1, row=1)
+status_label.grid(column=1, row=1, pady=20)
 
 #buttons
 btn_start = tk.Button(
@@ -64,7 +70,7 @@ btn_start = tk.Button(
     width=12,
     command=start_timer
 )
-btn_start.grid(column=0, row=3)
+btn_start.grid(column=0, row=3, pady=20)
 
 btn_pause = tk.Button(
     window,
@@ -73,7 +79,7 @@ btn_pause = tk.Button(
     width=12,
     command=pause_timer
 )
-btn_pause.grid(column=1, row=3)
+btn_pause.grid(column=1, row=3, pady=20)
 
 btn_give_up = tk.Button(
     window,
@@ -82,6 +88,6 @@ btn_give_up = tk.Button(
     width=12,
     command=give_up
 )
-btn_give_up.grid(column=2, row=3)
+btn_give_up.grid(column=2, row=3, pady=20)
 
 window.mainloop()
