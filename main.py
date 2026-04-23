@@ -60,7 +60,7 @@ timer_title = tk.Label(timer_frame, text="FocusPaw", font=title_font)
 timer_title.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
 def show_timer_screen():
-    start_timer(status_label)
+    start_timer()
 
 start_button = tk.Button(
     timer_frame, 
