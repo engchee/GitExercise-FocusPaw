@@ -16,7 +16,7 @@ def give_up():
 
 def show_timer_screen():
     #window setup
-    window = tk.Tk()
+    window = tk.Toplevel()
     window.title("Timer")
 
     app_width = 500
@@ -93,4 +93,3 @@ def show_timer_screen():
     )
     btn_give_up.grid(column=2, row=3, pady=20)
 
-    window.mainloop()
