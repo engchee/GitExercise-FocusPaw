@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.font as tKFont
+from timer import show_timer_screen
 
 window = tk.Tk()
 window.title("FocusPaw")
@@ -57,9 +58,6 @@ timer_frame = tk.Frame(window, width=500, height=500)
 
 timer_title = tk.Label(timer_frame, text="FocusPaw", font=title_font)
 timer_title.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
-
-def show_timer_screen():
-    start_timer(status_label)
 
 start_button = tk.Button(
     timer_frame, 
