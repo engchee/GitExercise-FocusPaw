@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 
 #timer function
-def start_timer(label):
+def start_timer(status_label):
     print("Timer started!(˶ˆᗜˆ˵)")
     status_label.config(text="Focusing...", fg="green")
 
