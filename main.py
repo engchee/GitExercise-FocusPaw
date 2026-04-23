@@ -25,6 +25,7 @@ button_font = tKFont.Font(
     size=25, 
     weight="bold"
 )
+
 # Added a smaller font for the input fields and labels
 normal_font = tKFont.Font(
     family="Consolas",
@@ -34,7 +35,6 @@ normal_font = tKFont.Font(
 # Root label (Optional, mostly covered by frames)
 label = tk.Label(window, text="FocusPaw", font=title_font)
 label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
-
 
 # --- Functions for switching screens ---
 
@@ -52,11 +52,23 @@ def show_timer_screen():
     # start_timer(status_label) # Make sure to define start_timer() elsewhere!
     pass
 
-
 # --- Login Frame ---
 login_frame = tk.Frame(window, width=500, height=500)
 login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
+label = tk.Label (window, text="FocusPaw", font=title_font)
+label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+
+#switch screen
+def show_timer():
+    login_frame.place_forget()
+    timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+#login frame
+login_frame = tk.Frame(window, width=500, height=500)
+login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+#put title in login frame
 login_title = tk.Label(login_frame, text="FocusPaw", font=title_font)
 login_title.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
@@ -69,7 +81,6 @@ login_button = tk.Button(
     command=show_setup  # Changed command to go to setup screen first
 )
 login_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-
 
 # --- Setup Frame (New Screen) ---
 setup_frame = tk.Frame(window, width=500, height=500)
@@ -110,10 +121,17 @@ next_button.place(relx=0.5, rely=0.75, anchor=tk.CENTER)
 
 
 # --- Timer Frame ---
+command=show_timer
+login_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+#timer frame
 timer_frame = tk.Frame(window, width=500, height=500)
 
 timer_title = tk.Label(timer_frame, text="FocusPaw", font=title_font)
 timer_title.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+
+def show_timer_screen():
+    start_timer(status_label)
 
 start_button = tk.Button(
     timer_frame, 
@@ -126,3 +144,4 @@ start_button = tk.Button(
 start_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 window.mainloop()
+
