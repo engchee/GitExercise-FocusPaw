@@ -38,13 +38,17 @@ def show_timer():
 login_frame = tk.Frame(window, width=500, height=500)
 login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
+#put title in login frame
+login_title = tk.Label(login_frame, text="FocusPaw", font=title_font)
+login_title.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+
 login_button = tk.Button(
     login_frame,
     text="Login/Sign Up",
     font=button_font,
     width=15,
     height=2,
-    command=enter_app
+    command=show_timer
 )
 login_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
