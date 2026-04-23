@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 
 #timer function
-def start_timer(status_label):
+def start_timer():
     print("Timer started!(˶ˆᗜˆ˵)")
     status_label.config(text="Focusing...", fg="green")
 
@@ -14,7 +14,7 @@ def give_up():
     print("User gave up. Deducting HP...(╥‸╥)")
     status_label.config(text="Gave Up", fg="red")
 
-if __name__ == "__main__":
+def show_timer_screen():
     #window setup
     window = tk.Tk()
     window.title("Timer")
@@ -55,6 +55,8 @@ if __name__ == "__main__":
         font=title_font
     )
     title_label.grid(column=1, row=0, pady=(30, 0))
+
+    global status_label
 
     status_label = tk.Label(
         window,
