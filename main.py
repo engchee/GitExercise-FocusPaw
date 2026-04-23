@@ -26,9 +26,6 @@ button_font = tKFont.Font(
     weight="bold"
 )
 
-label = tk.Label (window, text="FocusPaw", font=title_font)
-label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
-
 #login frame
 login_frame = tk.Frame(window, width=500, height=500)
 login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
