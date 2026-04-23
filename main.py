@@ -32,7 +32,7 @@ label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 #switch screen
 def show_timer():
     login_frame.place_forget()
-    timer_frame.place(relx=0.5, rely=0.5, anchor-tk.CENTER)
+    timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 #login frame
 login_frame = tk.Frame(window, width=500, height=500)
