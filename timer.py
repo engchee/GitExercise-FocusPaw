@@ -2,13 +2,13 @@ import tkinter as tk
 import tkinter.font as tkFont
 
 #timer function
-def start_timer():
+def start_timer(label):
     print("Timer started!(˶ˆᗜˆ˵)")
     status_label.config(text="Focusing...", fg="green")
 
 def pause_timer():
     print("Timer paused.(˶ᵔ ᵕ ᵔ˶)")
-    status_label.config(text="Paused", fg="orange")
+    status_label.config(text="Paused", fg="orange") 
 
 def give_up():
     print("User gave up. Deducting HP...(╥‸╥)")
