@@ -126,3 +126,5 @@ btn_give_up = tk.Button(
 )
 btn_give_up.grid(column=2, row=3, pady=20)
 
+window.mainloop()
+
