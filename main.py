@@ -52,13 +52,19 @@ login_button = tk.Button(
 )
 login_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
+#timer frame
+timer_frame = tk.Frame(window, width=500, height=500)
+
+timer_title = tk.Label(timer_frame, text="FocusPaw", font=title_font)
+timer_title.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+
 start_button = tk.Button(
-    window, 
-    text="Start Timer", 
+    timer_frame, 
+    text="Start Timer",  
     font=button_font, 
     width=15, 
     height=2,
-    command=
+    command=show_timer
 )
 start_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
