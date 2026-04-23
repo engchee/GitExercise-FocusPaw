@@ -29,12 +29,29 @@ button_font = tKFont.Font(
 label = tk.Label (window, text="FocusPaw", font=title_font)
 label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
+#login frame
+login_frame = tk.Frame(window, width=500, height=500)
+login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+def enter_app():
+    login_frame.place_forget() #hide login screen
+
+login_button = tk.Button(
+    login_frame,
+    text="Login/Sign Up",
+    font=button_font,
+    width=15,
+    height=2,
+    command=enter_app
+)
+login_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
 start_button = tk.Button(
     window, 
     text="Start Timer", 
     font=button_font, 
     width=15, 
-    height=2
+    height=2,
 )
 start_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
