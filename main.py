@@ -21,7 +21,7 @@ title_font = tKFont.Font(
     slant="italic"
 )
 button_font = tKFont.Font(
-    family="Arial", 
+    family="Consolas", 
     size=25, 
     weight="bold"
 )
