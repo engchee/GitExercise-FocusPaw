@@ -1,120 +1,139 @@
-from tkinter import *
-from PIL import Image, ImageTk
+import tkinter as tk
+import tkinter.font as tKFont
 
-# =========================
-# WINDOW SETUP
-# =========================
-root = Tk()
-root.title("FocusPaw System")
-root.geometry("900x600")
-root.configure(bg="#0b1f3a")
+# 1. Create the main window
+window = tk.Tk()
+window.title("FocusPaw")
 
-# =========================
-# LOAD IMAGES
-# =========================
-idle_img = Image.open("focuspaw.png").resize((200, 200))
-happy_img = Image.open("focuspaw.png").resize((200, 200)) 
+# Define the background color (Light Blue)
+bg_color = "#ADD8E6" 
+window.configure(bg=bg_color)
 
-idle_pet = ImageTk.PhotoImage(idle_img)
-happy_pet = ImageTk.PhotoImage(happy_img)
+app_width = 500
+app_height = 500
 
-# =========================
-# LEFT FRAME (CONTROLS)
-# =========================
-left_frame = Frame(root, bg="#1f7a1f", width=250)
-left_frame.pack(side="left", fill="y", padx=20, pady=20)
+# Center the window on your screen
+screen_width = window.winfo_screenwidth()
+screen_height = window.winfo_screenheight()
+x = (screen_width - app_width) // 2
+y = (screen_height - app_height) // 2
+window.geometry(f"{app_width}x{app_height}+{x}+{y}")
 
-user_label = Label(
-    left_frame,
-    text="User\n(MMU Student / Staff)",
-    bg="#1f7a1f",
-    fg="white",
-    font=("Arial", 12, "bold")
+# 2. Define the Fonts
+title_font = tKFont.Font(family="Courier", size=46, weight="bold", slant="italic")
+button_font = tKFont.Font(family="Consolas", size=25, weight="bold")
+normal_font = tKFont.Font(family="Consolas", size=14)
+
+# --- Functions ---
+
+def show_setup():
+    """Transition from Login to Setup screen"""
+    login_frame.place_forget()
+    setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+def show_timer():
+    """Transition from Setup to Timer screen"""
+    setup_frame.place_forget()
+    timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+def show_timer_screen():
+    """Placeholder for the timer logic"""
+    print("Timer logic will go here!")
+
+# --- 1. Login Frame ---
+login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
+login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+login_title = tk.Label(login_frame, text="FocusPaw", font=title_font, bg=bg_color)
+login_title.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+
+login_button = tk.Button(
+    login_frame,
+    text="Login/Sign Up",
+    font=button_font,
+    width=15,
+    height=2,
+    command=show_setup
 )
-user_label.pack(pady=20)
+login_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-# =========================
-# CENTER FRAME (PET)
-# =========================
-center_frame = Frame(root, bg="#0b1f3a")
-center_frame.pack(side="left", expand=True)
 
-pet_label = Label(center_frame, image=idle_pet, bg="#0b1f3a")
-pet_label.pack(pady=20)
+# --- 2. Setup Frame (User Info & Pet) ---
+setup_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 
-status_label = Label(
-    center_frame,
-    text="Pet Status: Idle",
-    font=("Arial", 14),
-    bg="#0b1f3a",
-    fg="white"
+setup_title = tk.Label(setup_frame, text="Setup", font=title_font, bg=bg_color)
+setup_title.place(relx=0.5, rely=0.15, anchor=tk.CENTER)
+
+# User ID Input
+tk.Label(setup_frame, text="User ID:", font=normal_font, bg=bg_color).place(relx=0.3, rely=0.35, anchor=tk.E)
+user_id_entry = tk.Entry(setup_frame, font=normal_font, width=15)
+user_id_entry.place(relx=0.35, rely=0.35, anchor=tk.W)
+
+# Pet Name Input
+tk.Label(setup_frame, text="Pet Name:", font=normal_font, bg=bg_color).place(relx=0.3, rely=0.45, anchor=tk.E)
+pet_name_entry = tk.Entry(setup_frame, font=normal_font, width=15)
+pet_name_entry.place(relx=0.35, rely=0.45, anchor=tk.W)
+
+# Choose Pet Dropdown
+tk.Label(setup_frame, text="Choose Pet:", font=normal_font, bg=bg_color).place(relx=0.3, rely=0.55, anchor=tk.E)
+pet_options = ["Cat", "Dog", "Rabbit", "Bird"]
+selected_pet = tk.StringVar(window)
+selected_pet.set(pet_options[0])
+pet_dropdown = tk.OptionMenu(setup_frame, selected_pet, *pet_options)
+pet_dropdown.config(font=normal_font, width=12)
+pet_dropdown.place(relx=0.35, rely=0.55, anchor=tk.W)
+
+next_button = tk.Button(setup_frame, text="Next", font=normal_font, width=10, command=show_timer)
+next_button.place(relx=0.5, rely=0.75, anchor=tk.CENTER)
+
+
+# --- 3. Timer Frame (Visuals & Placeholders) ---
+timer_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
+
+timer_title = tk.Label(timer_frame, text="Focus", font=title_font, bg=bg_color)
+timer_title.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
+
+# Pet Image Placeholder
+pet_placeholder = tk.Label(
+    timer_frame, 
+    text="[ focuspaw.png ]", 
+    bg="white", 
+    width=20, 
+    height=8, 
+    relief="sunken"
 )
-status_label.pack(pady=10)
+pet_placeholder.place(relx=0.5, rely=0.35, anchor=tk.CENTER)
 
-timer_label = Label(
-    center_frame,
-    text="00:00",
-    font=("Arial", 20, "bold"),
-    bg="#0b1f3a",
-    fg="white"
+# Timer Placeholder
+timer_display = tk.Label(
+    timer_frame, 
+    text="25:00", 
+    font=("Consolas", 40, "bold"), 
+    bg=bg_color, 
+    fg="#333333"
 )
-timer_label.pack(pady=10)
+timer_display.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
 
-# =========================
-# TIMER LOGIC
-# =========================
-time_left = 10  # demo (10 sec). Change to 1500 for 25 mins
-running = False
+# Stats Placeholder
+stats_label = tk.Label(
+    timer_frame, 
+    text="Sessions: 0 | Coins: 0", 
+    font=normal_font, 
+    bg="#F0F0F0", 
+    padx=10, 
+    pady=5, 
+    relief="groove"
+)
+stats_label.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
 
-def update_timer():
-    global time_left, running
+start_button = tk.Button(
+    timer_frame, 
+    text="Start Timer",  
+    font=normal_font, 
+    width=15, 
+    command=show_timer_screen
+)
+start_button.place(relx=0.5, rely=0.85, anchor=tk.CENTER)
 
-    if running and time_left > 0:
-        mins = time_left // 60
-        secs = time_left % 60
-        timer_label.config(text=f"{mins:02d}:{secs:02d}")
-
-        time_left -= 1
-        root.after(1000, update_timer)
-    else:
-        end_session()
-
-def start_session():
-    global running, time_left
-    running = True
-    time_left = 10  # change to 1500 for real use
-
-    status_label.config(text="Pet Status: Studying 😄")
-    pet_label.config(image=happy_pet)
-
-    update_timer()
-
-def reset_session():
-    global running, time_left
-    running = False
-    time_left = 10
-
-    timer_label.config(text="00:00")
-    status_label.config(text="Pet Status: Idle 😴")
-    pet_label.config(image=idle_pet)
-
-def end_session():
-    global running
-    running = False
-
-    status_label.config(text="Pet Status: Resting 😴")
-    pet_label.config(image=idle_pet)
-
-# =========================
-# BUTTONS
-# =========================
-start_btn = Button(left_frame, text="Start Session", width=20, command=start_session)
-start_btn.pack(pady=10)
-
-reset_btn = Button(left_frame, text="Give Up / Reset", width=20, command=reset_session)
-reset_btn.pack(pady=10)
-
-# =========================
-# RUN APP
-# =========================
-root.mainloop()
+# Start the application
+window.mainloop()
