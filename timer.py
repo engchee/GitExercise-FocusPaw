@@ -14,6 +14,11 @@ def give_up():
     print("User gave up. Deducting HP...(╥‸╥)")
     status_label.config(text="Gave Up", fg="red")
 
+#switch screen
+def show_timer():
+    start_timer_frame.place_forget()
+    timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER, relwidth=1, relheight=1)
+
 #window setup
 window = tk.Tk()
 window.title("Timer")
@@ -28,17 +33,24 @@ x = (screen_width - app_width) // 2
 y = (screen_height - app_height) // 2
 window.geometry(f"{app_width}x{app_height}+{x}+{y}")
 
-window.grid_columnconfigure(0, weight=1)
-window.grid_columnconfigure(1, weight=1)
-window.grid_columnconfigure(2, weight=1)
-window.grid_columnconfigure([0, 1, 2], weight=1)
-window.grid_rowconfigure(2, weight=1)
-
 #font style
+start_timer_button_font = tkFont.Font(
+    family="Consolas",
+    size=20,
+    weight="bold"
+)
+
 button_font = tkFont.Font(
     family="Consolas",
     size=12,
     weight="bold"
+)
+
+start_title_font = tkFont.Font(
+    family="Courier",
+    size=46,
+    weight="bold",
+    slant="italic"
 )
 
 title_font = tkFont.Font(
@@ -47,24 +59,48 @@ title_font = tkFont.Font(
     weight="bold",
 )
 
+#first screen: start_timer_frame
+start_timer_frame = tk.Frame(window, width=500, height=500)
+
+start_timer_title = tk.Label(start_timer_frame, text="FocusPaw", font=start_title_font)
+start_timer_title.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+
+start_timer_button = tk.Button(
+    start_timer_frame, 
+    text="Start Timer",  
+    font=start_timer_button_font, 
+    width=15, 
+    height=3,
+    command=show_timer
+)
+start_timer_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+start_timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+#second screen: timer_frame
+timer_frame = tk.Frame(window, width=500, height=500)
+
+timer_frame.grid_columnconfigure([0, 1, 2], weight=1)
+timer_frame.grid_rowconfigure(2, weight=1)
+
 #title and status label
 title_label = tk.Label(
-    window,
+    timer_frame,
     text="Timer",
     font=title_font
 )
-title_label.grid(column=1, row=0, pady=(30, 0))
+title_label.grid(column=0, row=0, columnspan=3, pady=(30, 0))
 
 status_label = tk.Label(
-    window,
+    timer_frame,
     text="Are you ready to FOCUS?",
     font=("Consolas", 14)
 )
-status_label.grid(column=1, row=1, pady=20)
+status_label.grid(column=0, row=1, columnspan=3, pady=20)
 
 #buttons
 btn_start = tk.Button(
-    window,
+    timer_frame,
     text="Start",
     font=button_font,
     width=12,
@@ -73,7 +109,7 @@ btn_start = tk.Button(
 btn_start.grid(column=0, row=3, pady=20)
 
 btn_pause = tk.Button(
-    window,
+    timer_frame,
     text="Pause",
     font=button_font,
     width=12,
@@ -82,7 +118,7 @@ btn_pause = tk.Button(
 btn_pause.grid(column=1, row=3, pady=20)
 
 btn_give_up = tk.Button(
-    window,
+    timer_frame,
     text="Give up",
     font=button_font,
     width=12,
