@@ -4,6 +4,10 @@ import tkinter.font as tKFont
 window = tk.Tk()
 window.title("FocusPaw")
 
+# Define the background color
+bg_color = "#ADD8E6"  # Light Blue
+window.configure(bg=bg_color)
+
 app_width = 500
 app_height = 500
 
@@ -26,9 +30,6 @@ button_font = tKFont.Font(
     weight="bold"
 )
 
-label = tk.Label (window, text="FocusPaw", font=title_font)
-label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
-
 #login frame
 login_frame = tk.Frame(window, width=500, height=500)
 login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
@@ -47,6 +48,4 @@ login_button = tk.Button(
 login_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 window.mainloop()
-
-
 
