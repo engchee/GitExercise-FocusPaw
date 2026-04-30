@@ -1,25 +1,52 @@
 import tkinter as tk
 import tkinter.font as tkFont
+import math
 
-#timer function
+#---------timer function---------
+work_min = 25
+break_min = 5
+timer = None
+
 def start_timer():
     print("Timer started!(˶ˆᗜˆ˵)")
     status_label.config(text="Focusing...", fg="green")
+    work_sec = work_min * 60
+    count_down(work_sec)
 
 def pause_timer():
     print("Timer paused.(˶ᵔ ᵕ ᵔ˶)")
-    status_label.config(text="Paused", fg="orange")
+    status_label.config(text="Paused", fg="orange") 
+    if timer is not None:
+        window.after_cancel(timer)
 
 def give_up():
     print("User gave up. Deducting HP...(╥‸╥)")
     status_label.config(text="Gave Up", fg="red")
+    if timer is not None:
+        window.after_cancel(timer)
+    timer_text.config(text="00:00")
 
-#switch screen
+def count_down(count):
+    count_min = math.floor(count/60)
+    count_sec = count % 60
+
+    if count_sec < 10:
+        count_sec = f"0{count_sec}"
+    timer_text.config(text=f"{count_min}:{count_sec}")
+
+    if count > 0:
+        global timer
+        timer = window.after(1000, count_down, count-1)
+    else:
+        print("Times up!")
+        status_label.config(text="Timer finished! Gaining HP!(ᵔᴥᵔ)")
+
+#----------switch screen---------
 def show_timer():
     start_timer_frame.place_forget()
     timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER, relwidth=1, relheight=1)
 
-#window setup
+#---------window setup---------
 window = tk.Tk()
 window.title("Timer")
 
@@ -33,7 +60,7 @@ x = (screen_width - app_width) // 2
 y = (screen_height - app_height) // 2
 window.geometry(f"{app_width}x{app_height}+{x}+{y}")
 
-#font style
+#---------font style---------
 start_timer_button_font = tkFont.Font(
     family="Consolas",
     size=20,
@@ -59,7 +86,7 @@ title_font = tkFont.Font(
     weight="bold",
 )
 
-#first screen: start_timer_frame
+#---------first screen: start_timer_frame---------
 start_timer_frame = tk.Frame(window, width=500, height=500)
 
 start_timer_title = tk.Label(start_timer_frame, text="FocusPaw", font=start_title_font)
@@ -77,13 +104,13 @@ start_timer_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 start_timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-#second screen: timer_frame
+#---------second screen: timer_frame---------
 timer_frame = tk.Frame(window, width=500, height=500)
 
 timer_frame.grid_columnconfigure([0, 1, 2], weight=1)
 timer_frame.grid_rowconfigure(2, weight=1)
 
-#title and status label
+#---------title and status label--------
 title_label = tk.Label(
     timer_frame,
     text="Timer",
@@ -98,7 +125,14 @@ status_label = tk.Label(
 )
 status_label.grid(column=0, row=1, columnspan=3, pady=20)
 
-#buttons
+timer_text = tk.Label(
+    timer_frame,
+    text="00:00", 
+    font=("Consolas", 70, "bold") 
+)
+timer_text.grid(column=0, row=2, columnspan=3, pady=(5, 40))
+
+#---------buttons---------
 btn_start = tk.Button(
     timer_frame,
     text="Start",
@@ -127,3 +161,4 @@ btn_give_up = tk.Button(
 btn_give_up.grid(column=2, row=3, pady=20)
 
 window.mainloop()
+
