@@ -1,73 +1,56 @@
 import tkinter as tk
 from tkinter import messagebox
 import json
-import os
 
-# ─── FUNCTION: Save pet name to JSON ───
 def save_pet_name():
-    pet_name = entry_box.get()  # Grabs what the user typed
+    pet_name = entry_box.get()
 
     if pet_name.strip() == "":
-        messagebox.showwarning("Oops!", "Please enter a pet name first!")
+        messagebox.showwarning("Oops!", "Please enter a pet name!")
         return
 
-    # Load existing data if file exists, else start fresh
-    if os.path.exists("pets.json"):
-        with open("pets.json", "r") as f:
-            data = json.load(f)
-    else:
-        data = {"pets": []}
+    data = {"pet_name": pet_name}
 
-    # Add the new pet name
-    data["pets"].append(pet_name)
-
-    # Save back to JSON
-    with open("pets.json", "w") as f:
+    with open("focuspaw_data.json", "w") as f:
         json.dump(data, f, indent=4)
 
-    messagebox.showinfo("Success!", f'"{pet_name}" has been saved!')
-    entry_box.delete(0, tk.END)  # Clear the box after saving
-
-# ─── FUNCTION: Read & display pets from JSON ───
-def load_pets():
-    if not os.path.exists("pets.json"):
-        messagebox.showinfo("No Data", "No pets saved yet!")
-        return
-
-    with open("pets.json", "r") as f:
-        data = json.load(f)
-
-    pets = data.get("pets", [])
-    if pets:
-        result_label.config(text="Pets: " + ", ".join(pets))
-    else:
-        result_label.config(text="No pets found.")
+    messagebox.showinfo("Saved!", f'"{pet_name}" saved!')
+    popup.destroy()
 
 # ─── BUILD THE WINDOW ───
-window = tk.Tk()
-window.title("Pet Name Entry")
-window.geometry("350x250")
-window.config(bg="#f0f4f8")
+popup = tk.Tk()
+popup.title("Name Your Pet")
 
-# Title label
-tk.Label(window, text="🐾 Enter Your Pet's Name",
-         font=("Arial", 14, "bold"), bg="#f0f4f8").pack(pady=15)
+app_width = 500
+app_height = 500
+
+# ✅ Center the window on screen
+screen_width = popup.winfo_screenwidth()
+screen_height = popup.winfo_screenheight()
+x = (screen_width - app_width) // 2
+y = (screen_height - app_height) // 2
+popup.geometry(f"{app_width}x{app_height}+{x}+{y}")
+
+popup.config(bg="#ADD8E6")  # ✅ matched FocusPaw blue
+
+# Title
+tk.Label(popup, text="FocusPaw",
+         font=("Courier", 36, "bold", "italic"),
+         bg="#ADD8E6").pack(pady=40)
+
+# Subtitle
+tk.Label(popup, text="Enter your pet's name:",
+         font=("Consolas", 14),
+         bg="#ADD8E6").pack()
 
 # Entry box
-entry_box = tk.Entry(window, font=("Arial", 12), width=25)
-entry_box.pack(pady=5)
+entry_box = tk.Entry(popup, font=("Consolas", 14), width=20)
+entry_box.pack(pady=10)
 
 # Save button
-tk.Button(window, text="Save Pet Name", font=("Arial", 11),
-          bg="#4CAF50", fg="white", command=save_pet_name).pack(pady=8)
+tk.Button(popup, text="Save",
+          font=("Consolas", 14, "bold"),
+          width=12, height=1,
+          command=save_pet_name).pack(pady=20)
 
-# Load button
-tk.Button(window, text="Load Pets from JSON", font=("Arial", 11),
-          bg="#2196F3", fg="white", command=load_pets).pack(pady=5)
-
-# Result display
-result_label = tk.Label(window, text="", font=("Arial", 11),
-                        bg="#f0f4f8", fg="#333")
-result_label.pack(pady=10)
-
-window.mainloop()
+popup.mainloop()
