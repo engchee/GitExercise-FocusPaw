@@ -10,7 +10,8 @@ timer = None
 def start_timer():
     print("Timer started!(˶ˆᗜˆ˵)")
     status_label.config(text="Focusing...", fg="green")
-    work_sec = work_min * 60
+    #work_sec = work_min * 60
+    work_sec = 5
     count_down(work_sec)
 
 def pause_timer():
