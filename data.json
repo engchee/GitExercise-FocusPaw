@@ -1,6 +1,7 @@
 {
+    "user_id": "lisha123",
     "pet_name": "nana",
-    "hunger": 15,
-    "energy": 20,
-    "happiness": 50
+    "current_xp": 0,
+    "current_hp": 100,
+    "current_streaks": 0
 }
