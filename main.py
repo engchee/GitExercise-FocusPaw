@@ -111,15 +111,8 @@ login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
     tk.Label(login_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Label(login_frame, 
-         text="FocusPaw", 
-         font=title_font, 
-         bg=bg_color).place(relx=0.5, rely=0.2, anchor=tk.CENTER)
-tk.Button(login_frame, 
-          text="Login/Sign Up", 
-          font=button_font, 
-          width=15, height=2, 
-          command=show_setup).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+tk.Label(login_frame, text="FocusPaw", font=title_font, bg=bg_color).place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+tk.Button(login_frame, text="Login/Sign Up", font=button_font, width=15, height=2, command=show_setup).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 
@@ -148,11 +141,7 @@ pet_dropdown = tk.OptionMenu(setup_frame, selected_pet, *pet_options)
 pet_dropdown.config(font=normal_font, width=12)
 pet_dropdown.place(relx=0.35, rely=0.55, anchor=tk.W)
 
-tk.Button(setup_frame, 
-          text="Next", 
-          font=normal_font, 
-          width=10, 
-          command=show_timer).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
+tk.Button(setup_frame, text="Next", font=normal_font, width=10, command=show_timer).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
 
 
 # ==========================================
@@ -170,30 +159,13 @@ pet_placeholder.place(relx=0.5, rely=0.35, anchor=tk.CENTER)
 timer_display = tk.Label(timer_frame, text="25:00", font=("Consolas", 40, "bold"), bg=bg_color, fg="#333333")
 timer_display.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
 
-stats_label = tk.Label(timer_frame, 
-                       text="Level: 0 | XP: 0 | HP: 100/100", 
-                       font=normal_font, 
-                       bg="#F0F0F0", 
-                       padx=10, 
-                       pady=5, 
-                       relief="groove")
+stats_label = tk.Label(timer_frame, text="Level: 0 | XP: 0 | HP: 100/100", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
 stats_label.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
 
 # Controls
-tk.Button(timer_frame, 
-          text="Start", 
-          font=normal_font, 
-          width=8, 
-          command=click_start).place(relx=0.25, rely=0.85, anchor=tk.CENTER)
-tk.Button(timer_frame, 
-          text="Pause", 
-          font=normal_font, 
-          width=8).place(relx=0.5, rely=0.85, anchor=tk.CENTER)
-tk.Button(timer_frame, 
-          text="Give Up", 
-          font=normal_font, 
-          width=8, 
-          command=click_give_up).place(relx=0.75, rely=0.85, anchor=tk.CENTER)
+tk.Button(timer_frame, text="Start", font=normal_font, width=8, command=click_start).place(relx=0.25, rely=0.85, anchor=tk.CENTER)
+tk.Button(timer_frame, text="Pause", font=normal_font, width=8).place(relx=0.5, rely=0.85, anchor=tk.CENTER)
+tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.75, rely=0.85, anchor=tk.CENTER)
 
 # --- START APP ---
 window.mainloop()
