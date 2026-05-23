@@ -15,7 +15,7 @@ is_paused = False
 def start_timer(window, timer_text_label, status_label):
     global reps, is_paused
     if is_paused:
-        resume_timer()
+        resume_timer(window, timer_text_label, status_label)
         return
     reps += 1
     if reps % 2 == 0:
@@ -28,7 +28,7 @@ def start_timer(window, timer_text_label, status_label):
             print("Background music file not found!")
         #break_sec = break_min * 60
         break_sec = 5
-        count_down(break_sec)
+        count_down(break_sec, window, timer_text_label, status_label)
     else:
         print("Timer started!(˶ˆᗜˆ˵)")
         status_label.config(text="Focusing...", fg="green")
@@ -39,7 +39,7 @@ def start_timer(window, timer_text_label, status_label):
             print("Background music file not found!")
         #work_sec = work_min * 60
         work_sec = 5
-        count_down(work_sec)
+        count_down(work_sec, window, timer_text_label, status_label)
 
 paused_count = 0
 remaining_count = 0
@@ -67,7 +67,7 @@ def resume_timer(window, timer_text_label, status_label):
         status_label.config(text="Focusing...", fg="green")
     else:
         status_label.config(text="Break Time! Take a rest!", fg="blue")
-    count_down(paused_count)
+    count_down(paused_count, window, timer_text_label, status_label)
 
 def give_up(window, timer_text_label, status_label):
     global reps, timer, is_paused
@@ -82,7 +82,7 @@ def give_up(window, timer_text_label, status_label):
         timer = None
     timer_text_label.config(text="00:00")
 
-def count_down(count):
+def count_down(count, window, timer_text_label, status_label):
     global remaining_count, reps
     remaining_count = count
 
@@ -96,7 +96,7 @@ def count_down(count):
 
     if count > 0:
         global timer
-        timer = window.after(1000, count_down, count-1)
+        timer = window.after(1000, count_down, count-1, window, timer_text_label, status_label)
     else:
         print("Times up!")
 
@@ -108,7 +108,7 @@ def count_down(count):
             except:
                 print("Audio file not found!")
             status_label.config(text="Timer finished! Gaining HP!(ᵔᴥᵔ)\nBreak starting...", fg="green")
-            window.after(3000, start_timer)
+            window.after(3000, start_timer, window, timer_text_label, status_label)
         else:
             try:
                 pygame.mixer.music.load("alarm1.mp3")
@@ -126,60 +126,5 @@ def count_down(count):
 
             window.after(2000, next_focus)
 
-#----------SWITCH SCREENS---------
-def show_timer():
-    start_timer_frame.place_forget()
-    timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER, relwidth=1, relheight=1)
 
-#---------TITLE AND STATUS LABELS---------
-title_label = tk.Label(
-    timer_frame,
-    text="Timer",
-    font=title_font
-)
-title_label.grid(column=0, row=0, columnspan=3, pady=(30, 0))
-
-status_label = tk.Label(
-    timer_frame,
-    text="Are you ready to FOCUS?",
-    font=("Consolas", 14)
-)
-status_label.grid(column=0, row=1, columnspan=3, pady=20)
-
-timer_text = tk.Label(
-    timer_frame,
-    text="00:00", 
-    font=("Consolas", 70, "bold") 
-)
-timer_text.grid(column=0, row=2, columnspan=3, pady=(5, 40))
-
-#---------BUTTONS---------
-btn_start = tk.Button(
-    timer_frame,
-    text="Start",
-    font=button_font,
-    width=12,
-    command=start_timer
-)
-btn_start.grid(column=0, row=3, pady=20)
-
-btn_pause = tk.Button(
-    timer_frame,
-    text="Pause",
-    font=button_font,
-    width=12,
-    command=pause_timer
-)
-btn_pause.grid(column=1, row=3, pady=20)
-
-btn_give_up = tk.Button(
-    timer_frame,
-    text="Give up",
-    font=button_font,
-    width=12,
-    command=give_up
-)
-btn_give_up.grid(column=2, row=3, pady=20)
-
-window.mainloop()
 

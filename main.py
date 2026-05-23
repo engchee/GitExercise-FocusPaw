@@ -80,12 +80,12 @@ def click_start():
         pet_placeholder.image = study_image
         
     # 2. Trigger timer 
-    timer.start_timer(window, timer_display, stats_label)
+    timer.start_timer(window, timer_display, timer_status)
 
 def click_pause():
     """What happens when user clicks Pause"""
     print("Pause clicked! Pausing timer...")
-    timer.pause_timer(window, timer_display, stats_label)
+    timer.pause_timer(window, timer_display, timer_status)
 
 def click_give_up():
     """What happens when user clicks Give Up"""
@@ -104,7 +104,7 @@ def click_give_up():
         pet_placeholder.image = cry_image
         
     # 3. Stop timer 
-    timer.give_up(window, timer_display, stats_label)
+    timer.give_up(window, timer_display, timer_status)
 
 
 #----------------------FRAME 1: LOGIN-----------------------
