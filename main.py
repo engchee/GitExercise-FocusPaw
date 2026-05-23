@@ -108,6 +108,12 @@ def complete_focus_session():
     print("Focus complete! Adding 10 XP...")
     current_xp = game_math.add_xp(current_xp, 10)     #Link to game_math to add xp
     update_stats_ui()                                 #Update the numbers on the screen
+    
+    chosen_pet = selected_pet.get()
+    default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
+    if default_image:
+        pet_placeholder.config(image=default_image)
+        pet_placeholder.image = default_image
 
 #----------------------FRAME 1: LOGIN-----------------------
 login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
