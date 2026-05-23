@@ -11,9 +11,12 @@ break_min = 5
 timer = None
 reps = 0
 is_paused = False
+focus_callback = None     #variable to hold the callback when focus session complete
 
-def start_timer(window, timer_text_label, status_label):
-    global reps, is_paused
+def start_timer(window, timer_text_label, status_label, callback=None):
+    global reps, is_paused, focus_callback
+    if callback is not None:
+        focus_callback = callback            #Save the callback to memory when Start is clicked
     if is_paused:
         resume_timer(window, timer_text_label, status_label)
         return
@@ -101,13 +104,15 @@ def count_down(count, window, timer_text_label, status_label):
         print("Times up!")
 
         if reps % 2 == 1:
+            if focus_callback is not None:
+                focus_callback()                #Trigger the XP Math
             #--------PLAY ALARM SOUND--------
             try:
                 pygame.mixer.music.load("alarm1.mp3")
                 pygame.mixer.music.play()
             except:
                 print("Audio file not found!")
-            status_label.config(text="Timer finished! Gaining HP!(ᵔᴥᵔ)\nBreak starting...", fg="green")
+            status_label.config(text="Timer finished! Gaining XP!(ᵔᴥᵔ)\nBreak starting...", fg="green")
             window.after(3000, start_timer, window, timer_text_label, status_label)
         else:
             try:
