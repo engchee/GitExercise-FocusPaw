@@ -2,12 +2,10 @@ import tkinter as tk
 import tkinter.font as tKFont
 
 # --- IMPORT HELPER MODULES ---
-# Make sure Pet_Visual.py and game_math.py are in the exact same folder!
 import Pet_Visual 
 import game_math
 
-# (Later in Week 9, Eng Chee and Lisha's files will be imported here too)
-# import timer
+import timer
 # import popup_data
 
 # --- 1. MAIN WINDOW SETUP ---
@@ -40,12 +38,12 @@ current_hp = 100
 
 # --- 3. NAVIGATION & LOGIC FUNCTIONS ---
 def show_setup():
-    """Hides Login and shows Setup"""
+    #Hides Login and shows Setup
     login_frame.place_forget()
     setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 def show_timer():
-    """Hides Setup, shows Timer, and loads the correct default pet"""
+    #Hides Setup, shows Timer, and loads the correct default pet
     setup_frame.place_forget()
     timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
     
@@ -65,14 +63,13 @@ def show_timer():
     update_stats_ui()
 
 def update_stats_ui():
-    """Calculates level and updates the text on the screen"""
+    #Calculates level and updates the text on the screen
     current_level = game_math.get_level(current_xp)
     stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100")
 
 # --- UI BUTTON HOOKS (Connecting UI to Engine) ---
 def click_start():
-    """What happens when user clicks Start"""
-    print("Start clicked! Changing image to Studying...")
+    print("Focusing...")
     
     # 1. Change image to studying
     chosen_pet = selected_pet.get()
@@ -81,13 +78,16 @@ def click_start():
         pet_placeholder.config(image=study_image)
         pet_placeholder.image = study_image
         
-    # 2. Trigger Eng Chee's timer (Placeholder for now)
-    # timer.start_timer(timer_display, stats_label)
+    # 2. Trigger timer 
+    timer.start_timer(window, timer_display, timer_status, complete_focus_session)
+
+def click_pause():
+    print("Paused")
+    timer.pause_timer(window, timer_display, timer_status)
 
 def click_give_up():
-    """What happens when user clicks Give Up"""
     global current_hp
-    print("Give up clicked! Taking damage...")
+    print("Gave Up...Deducting HP(╥‸╥)")
     
     # 1. Math: Take damage
     current_hp = game_math.subtract_hp(current_hp, 10)
@@ -100,13 +100,22 @@ def click_give_up():
         pet_placeholder.config(image=cry_image)
         pet_placeholder.image = cry_image
         
-    # 3. Engine: Stop Eng Chee's timer (Placeholder for now)
-    # timer.give_up()
+    # 3. Stop timer 
+    timer.give_up(window, timer_display, timer_status)
 
+def complete_focus_session():
+    global current_xp
+    print("Focus complete! Adding 10 XP...")
+    current_xp = game_math.add_xp(current_xp, 10)     #Link to game_math to add xp
+    update_stats_ui()                                 #Update the numbers on the screen
+    
+    chosen_pet = selected_pet.get()
+    default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
+    if default_image:
+        pet_placeholder.config(image=default_image)
+        pet_placeholder.image = default_image
 
-# ==========================================
-#              FRAME 1: LOGIN
-# ==========================================
+#----------------------FRAME 1: LOGIN-----------------------
 login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
     tk.Label(login_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
@@ -115,10 +124,7 @@ tk.Label(login_frame, text="FocusPaw", font=title_font, bg=bg_color).place(relx=
 tk.Button(login_frame, text="Login/Sign Up", font=button_font, width=15, height=2, command=show_setup).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-
-# ==========================================
-#              FRAME 2: SETUP
-# ==========================================
+#----------------------FRAME 2: SETUP-----------------------
 setup_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
     tk.Label(setup_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
@@ -144,9 +150,7 @@ pet_dropdown.place(relx=0.35, rely=0.55, anchor=tk.W)
 tk.Button(setup_frame, text="Next", font=normal_font, width=10, command=show_timer).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
 
 
-# ==========================================
-#              FRAME 3: TIMER
-# ==========================================
+#----------------------FRAME 3: TIMER-----------------------
 timer_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
     tk.Label(timer_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
@@ -154,17 +158,20 @@ if bg_image:
 tk.Label(timer_frame, text="Focus", font=title_font, bg=bg_color).place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
 pet_placeholder = tk.Label(timer_frame, text="[ Loading Pet... ]", bg="white", width=20, height=8, relief="sunken")
-pet_placeholder.place(relx=0.5, rely=0.35, anchor=tk.CENTER)
+pet_placeholder.place(relx=0.5, rely=0.43, anchor=tk.CENTER)
+
+timer_status = tk.Label(timer_frame, text="Ready to focus?", bg="#D7F6FD", font=normal_font, fg="blue")
+timer_status.place(relx=0.5, rely=0.23, anchor=tk.CENTER)
 
 timer_display = tk.Label(timer_frame, text="25:00", font=("Consolas", 40, "bold"), bg=bg_color, fg="#333333")
-timer_display.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
+timer_display.place(relx=0.5, rely=0.65, anchor=tk.CENTER)
 
 stats_label = tk.Label(timer_frame, text="Level: 0 | XP: 0 | HP: 100/100", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
-stats_label.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
+stats_label.place(relx=0.5, rely=0.76, anchor=tk.CENTER)
 
 # Controls
 tk.Button(timer_frame, text="Start", font=normal_font, width=8, command=click_start).place(relx=0.25, rely=0.85, anchor=tk.CENTER)
-tk.Button(timer_frame, text="Pause", font=normal_font, width=8).place(relx=0.5, rely=0.85, anchor=tk.CENTER)
+tk.Button(timer_frame, text="Pause", font=normal_font, width=8, command=click_pause).place(relx=0.5, rely=0.85, anchor=tk.CENTER)
 tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.75, rely=0.85, anchor=tk.CENTER)
 
 # --- START APP ---
