@@ -5,14 +5,14 @@ import pygame
 
 pygame.mixer.init()
 
-#---------timer function---------
+#---------TIMER FUNCTIONS---------
 work_min = 25
 break_min = 5
 timer = None
 reps = 0
 is_paused = False
 
-def start_timer():
+def start_timer(window, timer_text_label, status_label):
     global reps, is_paused
     if is_paused:
         resume_timer()
@@ -44,7 +44,7 @@ def start_timer():
 paused_count = 0
 remaining_count = 0
 
-def pause_timer():
+def pause_timer(window, timer_text_label, status_label):
     global paused_count, is_paused
     if timer is None or is_paused:
         return
@@ -59,7 +59,7 @@ def pause_timer():
     if timer is not None:
         window.after_cancel(timer)
 
-def resume_timer():
+def resume_timer(window, timer_text_label, status_label):
     global is_paused
     is_paused = False
     pygame.mixer.music.unpause()
@@ -69,7 +69,7 @@ def resume_timer():
         status_label.config(text="Break Time! Take a rest!", fg="blue")
     count_down(paused_count)
 
-def give_up():
+def give_up(window, timer_text_label, status_label):
     global reps, timer, is_paused
     reps = 0
     is_paused = False
@@ -80,7 +80,7 @@ def give_up():
     if timer is not None:
         window.after_cancel(timer)
         timer = None
-    timer_text.config(text="00:00")
+    timer_text_label.config(text="00:00")
 
 def count_down(count):
     global remaining_count, reps
@@ -92,7 +92,7 @@ def count_down(count):
         count_min = f"0{count_min}"
     if count_sec < 10:
         count_sec = f"0{count_sec}"
-    timer_text.config(text=f"{count_min}:{count_sec}")
+    timer_text_label.config(text=f"{count_min}:{count_sec}")
 
     if count > 0:
         global timer
@@ -101,7 +101,7 @@ def count_down(count):
         print("Times up!")
 
         if reps % 2 == 1:
-            #--------play alarm sound--------
+            #--------PLAY ALARM SOUND--------
             try:
                 pygame.mixer.music.load("alarm1.mp3")
                 pygame.mixer.music.play()
@@ -122,80 +122,16 @@ def count_down(count):
                 reps = 0
                 pygame.mixer.music.stop()
                 status_label.config(text="Break over!\nReady to focus again?(˶ᵔ ᵕ ᵔ˶)", fg="blue")
-                timer_text.config(text="00:00")
+                timer_text_label.config(text="00:00")
 
             window.after(2000, next_focus)
 
-#----------switch screen---------
+#----------SWITCH SCREENS---------
 def show_timer():
     start_timer_frame.place_forget()
     timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER, relwidth=1, relheight=1)
 
-#---------window setup---------
-window = tk.Tk()
-window.title("Timer")
-
-app_width = 500
-app_height = 500
-
-screen_width = window.winfo_screenwidth()
-screen_height = window.winfo_screenheight()
-
-x = (screen_width - app_width) // 2
-y = (screen_height - app_height) // 2
-window.geometry(f"{app_width}x{app_height}+{x}+{y}")
-
-#---------font style---------
-start_timer_button_font = tkFont.Font(
-    family="Consolas",
-    size=20,
-    weight="bold"
-)
-
-button_font = tkFont.Font(
-    family="Consolas",
-    size=12,
-    weight="bold"
-)
-
-start_title_font = tkFont.Font(
-    family="Courier",
-    size=46,
-    weight="bold",
-    slant="italic"
-)
-
-title_font = tkFont.Font(
-    family="Courier",
-    size=46,
-    weight="bold",
-)
-
-#---------first screen: start_timer_frame---------
-start_timer_frame = tk.Frame(window, width=500, height=500)
-
-start_timer_title = tk.Label(start_timer_frame, text="FocusPaw", font=start_title_font)
-start_timer_title.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
-
-start_timer_button = tk.Button(
-    start_timer_frame, 
-    text="Start Timer",  
-    font=start_timer_button_font, 
-    width=15, 
-    height=3,
-    command=show_timer
-)
-start_timer_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-
-start_timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-
-#---------second screen: timer_frame---------
-timer_frame = tk.Frame(window, width=500, height=500)
-
-timer_frame.grid_columnconfigure([0, 1, 2], weight=1)
-timer_frame.grid_rowconfigure(2, weight=1)
-
-#---------title and status label--------
+#---------TITLE AND STATUS LABELS---------
 title_label = tk.Label(
     timer_frame,
     text="Timer",
@@ -217,7 +153,7 @@ timer_text = tk.Label(
 )
 timer_text.grid(column=0, row=2, columnspan=3, pady=(5, 40))
 
-#---------buttons---------
+#---------BUTTONS---------
 btn_start = tk.Button(
     timer_frame,
     text="Start",
