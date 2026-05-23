@@ -80,7 +80,12 @@ def click_start():
         pet_placeholder.image = study_image
         
     # 2. Trigger timer 
-    timer.start_timer(timer_display, stats_label)
+    timer.start_timer(window, timer_display, stats_label)
+
+def click_pause():
+    """What happens when user clicks Pause"""
+    print("Pause clicked! Pausing timer...")
+    timer.pause_timer(window, timer_display, stats_label)
 
 def click_give_up():
     """What happens when user clicks Give Up"""
@@ -99,7 +104,7 @@ def click_give_up():
         pet_placeholder.image = cry_image
         
     # 3. Stop timer 
-    timer.give_up()
+    timer.give_up(window, timer_display, stats_label)
 
 
 #----------------------FRAME 1: LOGIN-----------------------
@@ -147,6 +152,9 @@ tk.Label(timer_frame, text="Focus", font=title_font, bg=bg_color).place(relx=0.5
 pet_placeholder = tk.Label(timer_frame, text="[ Loading Pet... ]", bg="white", width=20, height=8, relief="sunken")
 pet_placeholder.place(relx=0.5, rely=0.35, anchor=tk.CENTER)
 
+timer_status = tk.Label(timer_frame, text="Ready to focus?", font=normal_font, bg=bg_color, fg="blue")
+timer_status.place(relx=0.5, rely=0.47, anchor=tk.CENTER)
+
 timer_display = tk.Label(timer_frame, text="25:00", font=("Consolas", 40, "bold"), bg=bg_color, fg="#333333")
 timer_display.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
 
@@ -155,7 +163,7 @@ stats_label.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
 
 # Controls
 tk.Button(timer_frame, text="Start", font=normal_font, width=8, command=click_start).place(relx=0.25, rely=0.85, anchor=tk.CENTER)
-tk.Button(timer_frame, text="Pause", font=normal_font, width=8).place(relx=0.5, rely=0.85, anchor=tk.CENTER)
+tk.Button(timer_frame, text="Pause", font=normal_font, width=8, command=click_pause).place(relx=0.5, rely=0.85, anchor=tk.CENTER)
 tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.75, rely=0.85, anchor=tk.CENTER)
 
 # --- START APP ---
