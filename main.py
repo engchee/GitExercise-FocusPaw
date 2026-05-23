@@ -1,10 +1,17 @@
 import tkinter as tk
 import tkinter.font as tKFont
 
+# --- IMPORT HELPER MODULES ---
+import Pet_Visual 
+import game_math
+
+import timer
+# import popup_data
+
+# --- 1. MAIN WINDOW SETUP ---
 window = tk.Tk()
 window.title("FocusPaw")
 
-# Define the background color
 bg_color = "#ADD8E6"  # Light Blue
 window.configure(bg=bg_color)
 
@@ -13,39 +20,143 @@ app_height = 500
 
 screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
-
 x = (screen_width - app_width) // 2
 y = (screen_height - app_height) // 2
 window.geometry(f"{app_width}x{app_height}+{x}+{y}")
 
-title_font = tKFont.Font(
-    family="Courier", 
-    size=46, 
-    weight="bold", 
-    slant="italic"
-)
-button_font = tKFont.Font(
-    family="Consolas", 
-    size=25, 
-    weight="bold"
-)
+# --- 2. FONTS & BACKGROUND ---
+title_font = tKFont.Font(family="Courier", size=46, weight="bold", slant="italic")
+button_font = tKFont.Font(family="Consolas", size=25, weight="bold")
+normal_font = tKFont.Font(family="Consolas", size=14)
 
-#login frame
-login_frame = tk.Frame(window, width=500, height=500)
+# Ask Pet_Visual.py for the background image
+bg_image = Pet_Visual.get_background_image(app_width, app_height)
+
+# --- TEMPORARY VARIABLES (Until Lisha's Data is connected) ---
+current_xp = 0
+current_hp = 100
+
+# --- 3. NAVIGATION & LOGIC FUNCTIONS ---
+def show_setup():
+    """Hides Login and shows Setup"""
+    login_frame.place_forget()
+    setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+def show_timer():
+    """Hides Setup, shows Timer, and loads the correct default pet"""
+    setup_frame.place_forget()
+    timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    # 1. Find out which pet the user picked in the dropdown
+    chosen_pet = selected_pet.get()
+    
+    # 2. Ask Pet_Visual for the default image of that pet
+    new_image = Pet_Visual.get_pet_image(chosen_pet, "default")
+    
+    # 3. Update the UI
+    if new_image:
+        pet_placeholder.config(image=new_image, text="", width=150, height=150)
+        pet_placeholder.image = new_image # Critical Tkinter save rule!
+    else:
+        pet_placeholder.config(text="[Image Missing]")
+        
+    update_stats_ui()
+
+def update_stats_ui():
+    """Calculates level and updates the text on the screen"""
+    current_level = game_math.get_level(current_xp)
+    stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100")
+
+# --- UI BUTTON HOOKS (Connecting UI to Engine) ---
+def click_start():
+    """What happens when user clicks Start"""
+    print("Start clicked! Changing image to Studying...")
+    
+    # 1. Change image to studying
+    chosen_pet = selected_pet.get()
+    study_image = Pet_Visual.get_pet_image(chosen_pet, "studying")
+    if study_image:
+        pet_placeholder.config(image=study_image)
+        pet_placeholder.image = study_image
+        
+    # 2. Trigger timer 
+    timer.start_timer(timer_display, stats_label)
+
+def click_give_up():
+    """What happens when user clicks Give Up"""
+    global current_hp
+    print("Give up clicked! Taking damage...")
+    
+    # 1. Math: Take damage
+    current_hp = game_math.subtract_hp(current_hp, 10)
+    update_stats_ui()
+    
+    # 2. Visual: Change image to crying
+    chosen_pet = selected_pet.get()
+    cry_image = Pet_Visual.get_pet_image(chosen_pet, "crying")
+    if cry_image:
+        pet_placeholder.config(image=cry_image)
+        pet_placeholder.image = cry_image
+        
+    # 3. Stop timer 
+    timer.give_up()
+
+
+#----------------------FRAME 1: LOGIN-----------------------
+login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
+if bg_image:
+    tk.Label(login_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
+
+tk.Label(login_frame, text="FocusPaw", font=title_font, bg=bg_color).place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+tk.Button(login_frame, text="Login/Sign Up", font=button_font, width=15, height=2, command=show_setup).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-#put title in login frame
-login_title = tk.Label(login_frame, text="FocusPaw", font=title_font)
-login_title.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+#----------------------FRAME 2: SETUP-----------------------
+setup_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
+if bg_image:
+    tk.Label(setup_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
 
-login_button = tk.Button(
-    login_frame,
-    text="Login/Sign Up",
-    font=button_font,
-    width=15,
-    height=2,
-)
-login_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+tk.Label(setup_frame, text="Setup", font=title_font, bg=bg_color).place(relx=0.5, rely=0.15, anchor=tk.CENTER)
 
+tk.Label(setup_frame, text="User ID:", font=normal_font, bg=bg_color).place(relx=0.3, rely=0.35, anchor=tk.E)
+entry_userid = tk.Entry(setup_frame, font=normal_font, width=15)
+entry_userid.place(relx=0.35, rely=0.35, anchor=tk.W)
+
+tk.Label(setup_frame, text="Pet Name:", font=normal_font, bg=bg_color).place(relx=0.3, rely=0.45, anchor=tk.E)
+entry_petname = tk.Entry(setup_frame, font=normal_font, width=15)
+entry_petname.place(relx=0.35, rely=0.45, anchor=tk.W)
+
+tk.Label(setup_frame, text="Choose Pet:", font=normal_font, bg=bg_color).place(relx=0.3, rely=0.55, anchor=tk.E)
+pet_options = ["Cat", "Dog", "Ebee"]
+selected_pet = tk.StringVar(window)
+selected_pet.set(pet_options[0])
+pet_dropdown = tk.OptionMenu(setup_frame, selected_pet, *pet_options)
+pet_dropdown.config(font=normal_font, width=12)
+pet_dropdown.place(relx=0.35, rely=0.55, anchor=tk.W)
+
+tk.Button(setup_frame, text="Next", font=normal_font, width=10, command=show_timer).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
+
+
+#----------------------FRAME 3: TIMER-----------------------
+timer_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
+if bg_image:
+    tk.Label(timer_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
+
+tk.Label(timer_frame, text="Focus", font=title_font, bg=bg_color).place(relx=0.5, rely=0.1, anchor=tk.CENTER)
+
+pet_placeholder = tk.Label(timer_frame, text="[ Loading Pet... ]", bg="white", width=20, height=8, relief="sunken")
+pet_placeholder.place(relx=0.5, rely=0.35, anchor=tk.CENTER)
+
+timer_display = tk.Label(timer_frame, text="25:00", font=("Consolas", 40, "bold"), bg=bg_color, fg="#333333")
+timer_display.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
+
+stats_label = tk.Label(timer_frame, text="Level: 0 | XP: 0 | HP: 100/100", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
+stats_label.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
+
+# Controls
+tk.Button(timer_frame, text="Start", font=normal_font, width=8, command=click_start).place(relx=0.25, rely=0.85, anchor=tk.CENTER)
+tk.Button(timer_frame, text="Pause", font=normal_font, width=8).place(relx=0.5, rely=0.85, anchor=tk.CENTER)
+tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.75, rely=0.85, anchor=tk.CENTER)
+
+# --- START APP ---
 window.mainloop()
-
