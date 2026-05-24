@@ -69,20 +69,26 @@ def update_stats_ui():
 
 # --- UI BUTTON HOOKS (Connecting UI to Engine) ---
 def click_start():
-    print("Focusing...")
-    
-    # 1. Change image to studying
-    chosen_pet = selected_pet.get()
-    study_image = Pet_Visual.get_pet_image(chosen_pet, "studying")
-    if study_image:
-        pet_placeholder.config(image=study_image)
-        pet_placeholder.image = study_image
+    print("Start Focus/Resume clicked!")
+
+    if timer.is_paused and timer.reps % 2 == 0:
+        chosen_pet = selected_pet.get()
+        default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
+        if default_image:
+            pet_placeholder.config(image=default_image)
+            pet_placeholder.image = default_image   
+    else:                                                       #Change image to studying
+        chosen_pet = selected_pet.get()
+        study_image = Pet_Visual.get_pet_image(chosen_pet, "studying")
+        if study_image:
+            pet_placeholder.config(image=study_image)
+            pet_placeholder.image = study_image
         
-    # 2. Trigger timer 
+    #Trigger timer 
     timer.start_timer(window, timer_display, timer_status, complete_focus_session)
 
 def click_pause():
-    print("Paused")
+    print("Pause clicked!")
     timer.pause_timer(window, timer_display, timer_status)
 
 def click_give_up():
