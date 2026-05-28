@@ -132,4 +132,3 @@ def count_down(count, window, timer_text_label, status_label):
             window.after(2000, next_focus)
 
 
-
