@@ -8,6 +8,11 @@ def subtract_hp(current_hp, damage):
     new_hp = max(0, current_hp - damage)
     return new_hp
 
+def add_hp(current_hp, heal_amount):
+    """Restore HP when a focus session finishes. HP cannot exceed 100."""
+    new_hp = min(100, current_hp + heal_amount)
+    return new_hp
+
 def get_level(current_xp):
     """Return the level based on XP. Every 100 XP = 1 level."""
     return current_xp // 100

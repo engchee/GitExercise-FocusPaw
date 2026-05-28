@@ -140,11 +140,18 @@ def click_give_up():
     popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak)
 
 def complete_focus_session():
-    global current_xp
-    print("Focus complete! Adding 10 XP...")
-    current_xp = game_math.add_xp(current_xp, 10)     
-    update_stats_ui()                                 
+    global current_xp, current_hp  # <-- Make sure to add current_hp here!
+    print("Focus complete! Adding 10 XP and recovering 10 HP...")
     
+    # 1. Math: Add XP
+    current_xp = game_math.add_xp(current_xp, 10)     
+    
+    # 2. Math: Heal HP (This is your Step 2 code!)
+    current_hp = game_math.add_hp(current_hp, 10)
+    
+    # Update the text on the screen
+    update_stats_ui()
+   
     chosen_pet = selected_pet.get()
     default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
     if default_image:
