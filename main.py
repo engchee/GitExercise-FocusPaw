@@ -37,6 +37,23 @@ current_xp = 0
 current_hp = 100
 current_streak = 1
 
+# --- AUDIO VARIABLES ---
+mute_var = tk.BooleanVar(value=False)
+focus_music_var = tk.StringVar(value="Options")
+break_music_var = tk.StringVar(value="Options")
+
+focus_options = ["Sunshine", "Lofi"]
+break_options = ["Happy Home", "Dance with Me"]
+
+def show_settings():                   #Hides the Setup frame and opens Settings
+    setup_frame.place_forget()
+    settings_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+def save_settings_and_return():        #Sends choices to timer.py and goes back to Setup
+    timer.apply_settings(mute_var.get(), focus_music_var.get(), break_music_var.get())
+    settings_frame.place_forget()
+    setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
 # --- 3. NAVIGATION & LOGIC FUNCTIONS ---
 def show_setup():
     #Hides Login and shows Setup
@@ -189,7 +206,7 @@ pet_dropdown.config(font=normal_font, width=12)
 pet_dropdown.place(relx=0.35, rely=0.55, anchor=tk.W)
 
 tk.Button(setup_frame, text="Next", font=normal_font, width=10, command=show_timer).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
-
+tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=20, y=20)
 
 #----------------------FRAME 3: TIMER-----------------------
 timer_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
@@ -214,6 +231,27 @@ stats_label.place(relx=0.5, rely=0.76, anchor=tk.CENTER)
 tk.Button(timer_frame, text="Start", font=normal_font, width=8, command=click_start).place(relx=0.25, rely=0.85, anchor=tk.CENTER)
 tk.Button(timer_frame, text="Pause", font=normal_font, width=8, command=click_pause).place(relx=0.5, rely=0.85, anchor=tk.CENTER)
 tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.75, rely=0.85, anchor=tk.CENTER)
+
+#----------------------FRAME 4: SETTINGS-----------------------
+settings_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
+if bg_image:
+    tk.Label(settings_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
+
+tk.Label(settings_frame, text="Settings", font=title_font, bg=bg_color).place(relx=0.5, rely=0.15, anchor=tk.CENTER)
+
+# 1. Mute Checkbox
+tk.Checkbutton(settings_frame, text="Mute Background Music", variable=mute_var, font=normal_font, bg=bg_color).place(relx=0.5, rely=0.35, anchor=tk.CENTER)
+
+# 2. Focus Music Dropdown
+tk.Label(settings_frame, text="Focus Music:", font=normal_font, bg=bg_color).place(relx=0.3, rely=0.45, anchor=tk.E)
+tk.OptionMenu(settings_frame, focus_music_var, *focus_options).place(relx=0.35, rely=0.45, anchor=tk.W)
+
+# 3. Break Music Dropdown
+tk.Label(settings_frame, text="Break Music:", font=normal_font, bg=bg_color).place(relx=0.3, rely=0.55, anchor=tk.E)
+tk.OptionMenu(settings_frame, break_music_var, *break_options).place(relx=0.35, rely=0.55, anchor=tk.W)
+
+# Save Button
+tk.Button(settings_frame, text="Save & Back", font=normal_font, width=12, command=save_settings_and_return).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
 
 # --- START APP ---
 window.mainloop()
