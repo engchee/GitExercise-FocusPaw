@@ -6,7 +6,7 @@ import Pet_Visual
 import game_math
 
 import timer
-# import popup_data
+import popup
 
 # --- 1. MAIN WINDOW SETUP ---
 window = tk.Tk()
@@ -35,6 +35,7 @@ bg_image = Pet_Visual.get_background_image(app_width, app_height)
 # --- TEMPORARY VARIABLES (Until Lisha's Data is connected) ---
 current_xp = 0
 current_hp = 100
+current_streak = 1
 
 # --- 3. NAVIGATION & LOGIC FUNCTIONS ---
 def show_setup():
@@ -43,20 +44,40 @@ def show_setup():
     setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 def show_timer():
-    #Hides Setup, shows Timer, and loads the correct default pet
+    global current_xp, current_hp, current_streak
+    
+    # 1. Grab what the user typed in the boxes
+    userid = entry_userid.get().strip()
+    petname = entry_petname.get().strip()
+    chosen_pet = selected_pet.get()
+    
+    # 2. --- TRIGGER POPUP.PY LOAD FUNCTION ---
+    loaded_data = popup.load_data(userid)
+    
+    if loaded_data:
+        print(f"Welcome back, {userid}!")
+        current_xp = loaded_data.get("current_xp", 0)
+        current_hp = loaded_data.get("current_hp", 100)
+        current_streak = loaded_data.get("streak", 1)
+        # Update the dropdown to match their saved pet
+        chosen_pet = loaded_data.get("pet type", "Cat")
+        selected_pet.set(chosen_pet)
+    else:
+        print(f"New user {userid} created!")
+        current_xp = 0
+        current_hp = 100
+        current_streak = 1
+
+    # Hide Setup, shows Timer
     setup_frame.place_forget()
     timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
     
-    # 1. Find out which pet the user picked in the dropdown
-    chosen_pet = selected_pet.get()
-    
-    # 2. Ask Pet_Visual for the default image of that pet
+    # Ask Pet_Visual for the default image of that pet
     new_image = Pet_Visual.get_pet_image(chosen_pet, "default")
     
-    # 3. Update the UI
     if new_image:
         pet_placeholder.config(image=new_image, text="", width=150, height=150)
-        pet_placeholder.image = new_image # Critical Tkinter save rule!
+        pet_placeholder.image = new_image 
     else:
         pet_placeholder.config(text="[Image Missing]")
         
@@ -65,30 +86,24 @@ def show_timer():
 def update_stats_ui():
     #Calculates level and updates the text on the screen
     current_level = game_math.get_level(current_xp)
-    stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100")
+    stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100 | 🔥Streak: {current_streak}")
 
 # --- UI BUTTON HOOKS (Connecting UI to Engine) ---
 def click_start():
-    print("Start Focus/Resume clicked!")
-
-    if timer.is_paused and timer.reps % 2 == 0:
-        chosen_pet = selected_pet.get()
-        default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
-        if default_image:
-            pet_placeholder.config(image=default_image)
-            pet_placeholder.image = default_image   
-    else:                                                       #Change image to studying
-        chosen_pet = selected_pet.get()
-        study_image = Pet_Visual.get_pet_image(chosen_pet, "studying")
-        if study_image:
-            pet_placeholder.config(image=study_image)
-            pet_placeholder.image = study_image
+    print("Focusing...")
+    
+    # 1. Change image to studying
+    chosen_pet = selected_pet.get()
+    study_image = Pet_Visual.get_pet_image(chosen_pet, "studying")
+    if study_image:
+        pet_placeholder.config(image=study_image)
+        pet_placeholder.image = study_image
         
-    #Trigger timer 
+    # 2. Trigger timer 
     timer.start_timer(window, timer_display, timer_status, complete_focus_session)
 
 def click_pause():
-    print("Pause clicked!")
+    print("Paused")
     timer.pause_timer(window, timer_display, timer_status)
 
 def click_give_up():
@@ -108,18 +123,28 @@ def click_give_up():
         
     # 3. Stop timer 
     timer.give_up(window, timer_display, timer_status)
+    
+    # --- TRIGGER AUTO-SAVE ---
+    userid = entry_userid.get().strip()
+    petname = entry_petname.get().strip()
+    popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak)
 
 def complete_focus_session():
     global current_xp
     print("Focus complete! Adding 10 XP...")
-    current_xp = game_math.add_xp(current_xp, 10)     #Link to game_math to add xp
-    update_stats_ui()                                 #Update the numbers on the screen
+    current_xp = game_math.add_xp(current_xp, 10)     
+    update_stats_ui()                                 
     
     chosen_pet = selected_pet.get()
     default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
     if default_image:
         pet_placeholder.config(image=default_image)
         pet_placeholder.image = default_image
+        
+    # --- TRIGGER AUTO-SAVE ---
+    userid = entry_userid.get().strip()
+    petname = entry_petname.get().strip()
+    popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak)
 
 #----------------------FRAME 1: LOGIN-----------------------
 login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
