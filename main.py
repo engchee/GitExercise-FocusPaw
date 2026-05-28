@@ -90,16 +90,26 @@ def update_stats_ui():
 
 # --- UI BUTTON HOOKS (Connecting UI to Engine) ---
 def click_start():
-    print("Focusing...")
+    print("Start/Resume clicked!")
     
-    # 1. Change image to studying
-    chosen_pet = selected_pet.get()
-    study_image = Pet_Visual.get_pet_image(chosen_pet, "studying")
-    if study_image:
-        pet_placeholder.config(image=study_image)
-        pet_placeholder.image = study_image
+    # Check if we are resuming a paused BREAK session (even reps)
+    if timer.is_paused and timer.reps % 2 == 0:
+        # Keep the default image since they are still on a break
+        chosen_pet = selected_pet.get()
+        default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
+        if default_image:
+            pet_placeholder.config(image=default_image)
+            pet_placeholder.image = default_image
+            
+    # Otherwise, it is a FOCUS session (starting fresh or resuming focus)
+    else:
+        chosen_pet = selected_pet.get()
+        study_image = Pet_Visual.get_pet_image(chosen_pet, "studying")
+        if study_image:
+            pet_placeholder.config(image=study_image)
+            pet_placeholder.image = study_image
         
-    # 2. Trigger timer 
+    # Trigger the timer engine
     timer.start_timer(window, timer_display, timer_status, complete_focus_session)
 
 def click_pause():
