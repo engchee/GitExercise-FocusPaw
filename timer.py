@@ -11,8 +11,13 @@ break_min = 5
 timer = None
 reps = 0
 is_paused = False
-focus_callback = None     #variable to hold the callback when focus session complete
+focus_callback = None     
+save_callback = None       # Holds the save function reference
 
+<<<<<<< HEAD
+def start_timer(window, timer_text_label, status_label, callback=None, on_save=None):
+    global reps, is_paused, focus_callback, save_callback
+=======
 #------------AUDIO SETTINGS------------
 focus_music_file = "sunshine.mp3"
 break_music_file = "happy_home.mp3"
@@ -37,8 +42,12 @@ def apply_settings(muted, focus_music, break_music):
         
 def start_timer(window, timer_text_label, status_label, callback=None):
     global reps, is_paused, focus_callback
+>>>>>>> main
     if callback is not None:
-        focus_callback = callback            #Save the callback to memory when Start is clicked
+        focus_callback = callback            
+    if on_save is not None:
+        save_callback = on_save              
+        
     if is_paused:
         resume_timer(window, timer_text_label, status_label)
         return
@@ -49,6 +58,13 @@ def start_timer(window, timer_text_label, status_label, callback=None):
     if reps % 2 == 0:
         print("Break time! Take a rest!(˶ᵔ ᵕ ᵔ˶)")
         status_label.config(text="Break Time! Take a rest!", fg="blue")
+<<<<<<< HEAD
+        try:
+            pygame.mixer.music.load("break1.mp3")
+            pygame.mixer.music.play(-1)
+        except:
+            print("Background music file not found!")
+=======
 
         if not is_muted:
             try:
@@ -57,11 +73,19 @@ def start_timer(window, timer_text_label, status_label, callback=None):
             except:
                 print("Background music file not found!")
         #break_sec = break_min * 60
+>>>>>>> main
         break_sec = 5
         count_down(break_sec, window, timer_text_label, status_label)
     else:
         print("Timer started!(˶ˆᗜˆ˵)")
         status_label.config(text="Focusing...", fg="green")
+<<<<<<< HEAD
+        try:
+            pygame.mixer.music.load("study1.mp3")
+            pygame.mixer.music.play(-1)
+        except:
+            print("Background music file not found!")
+=======
 
         if not is_muted:
             try:
@@ -70,6 +94,7 @@ def start_timer(window, timer_text_label, status_label, callback=None):
             except:
                 print("Background music file not found!")
         #work_sec = work_min * 60
+>>>>>>> main
         work_sec = 5
         count_down(work_sec, window, timer_text_label, status_label)
 
@@ -134,8 +159,9 @@ def count_down(count, window, timer_text_label, status_label):
 
         if reps % 2 == 1:
             if focus_callback is not None:
-                focus_callback()                #Trigger the XP Math
-            #--------PLAY ALARM SOUND--------
+                focus_callback()                
+            if save_callback is not None:
+                save_callback()                 # Save on complete focus automatically
             try:
                 pygame.mixer.music.load("alarm1.mp3")
                 pygame.mixer.music.play()
@@ -158,6 +184,10 @@ def count_down(count, window, timer_text_label, status_label):
                 status_label.config(text="Break over!\nReady to focus again?(˶ᵔ ᵕ ᵔ˶)", fg="blue")
                 timer_text_label.config(text="00:00")
 
+<<<<<<< HEAD
+            window.after(2000, next_focus)
+=======
             window.after(2000, next_focus)
 
 
+>>>>>>> main
