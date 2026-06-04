@@ -43,8 +43,8 @@ user_history = {} # Caches historical data for graphing updates
 
 # --- AUDIO VARIABLES ---
 mute_var = tk.BooleanVar(value=False)
-focus_music_var = tk.StringVar(value="Option")
-break_music_var = tk.StringVar(value="Option")
+focus_music_var = tk.StringVar(value="Options")
+break_music_var = tk.StringVar(value="Options")
 
 focus_options = ["Sunshine", "Lofi"]
 break_options = ["Happy Home", "Dance with Me"]
