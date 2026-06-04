@@ -1,9 +1,9 @@
 {
     "user id": "thana",
-    "pet name": "tom",
-    "pet type": "Cat",
-    "current_xp": 80,
-    "current_hp": 30,
+    "pet name": "fluffy",
+    "pet type": "Dog",
+    "current_xp": 130,
+    "current_hp": 70,
     "streak": 1,
     "last_login": "2026-06-04"
 }
