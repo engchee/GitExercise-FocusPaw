@@ -2,6 +2,7 @@
     "user id": "lisha",
     "pet name": "fluffy",
     "pet type": "Dog",
+<<<<<<< HEAD
     "current_xp": 30,
     "current_hp": 70,
     "streak": 1,
@@ -9,4 +10,10 @@
     "history": {
         "Week 13": 20
     }
+=======
+    "current_xp": 10,
+    "current_hp": 90,
+    "streak": 1,
+    "last_login": "2026-05-28"
+>>>>>>> main
 }
