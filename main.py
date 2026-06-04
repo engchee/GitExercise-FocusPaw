@@ -184,7 +184,7 @@ def complete_focus_session():
     # Save explicitly logging 10 XP towards history tracking
     popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak, xp_earned_now=10)
     
-    # Refresh local memory storage reference
+    # Refresh local memory storage reference for graphs
     refreshed_data = popup.load_data(userid)
     if refreshed_data:
         user_history = refreshed_data.get("history", {})
