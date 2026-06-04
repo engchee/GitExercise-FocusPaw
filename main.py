@@ -49,11 +49,11 @@ break_music_var = tk.StringVar(value="Options")
 focus_options = ["Sunshine", "Lofi"]
 break_options = ["Happy Home", "Dance with Me"]
 
-def show_settings():                   #Hides the Setup frame and opens Settings
+def show_settings():                   
     setup_frame.place_forget()
     settings_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-def save_settings_and_return():        #Sends choices to timer.py and goes back to Setup
+def save_settings_and_return():        
     timer.apply_settings(mute_var.get(), focus_music_var.get(), break_music_var.get())
     settings_frame.place_forget()
     setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
@@ -66,17 +66,15 @@ def show_setup():
 def show_timer():
     global current_xp, current_hp, current_streak, user_history
     
-    # 1. Grab what the user typed in the boxes
     userid = entry_userid.get().strip()
     petname = entry_petname.get().strip()
     chosen_pet = selected_pet.get()
     
-    # Task 2: Validate fields before changing views
+    # Validate fields before changing views
     if not userid or not petname:
         messagebox.showwarning("Missing Fields", "Please type your User ID and Pet Name before continuing!")
         return
     
-    # 2. --- TRIGGER POPUP.PY LOAD FUNCTION ---
     loaded_data = popup.load_data(userid)
     
     if loaded_data:
@@ -86,7 +84,7 @@ def show_timer():
         current_streak = loaded_data.get("streak", 1)
         user_history = loaded_data.get("history", {})
         
-        # We do NOT overwrite the pet choice here so users can still switch pets!
+        # Note: We purposely leave selected_pet alone here so users can switch pets dynamically!
     else:
         print(f"New user {userid} created!")
         current_xp = 0
@@ -94,13 +92,10 @@ def show_timer():
         current_streak = 1
         user_history = {}
 
-    # Hide Setup, shows Timer
     setup_frame.place_forget()
     timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
     
-    # Ask Pet_Visual for the default image of that pet
     new_image = Pet_Visual.get_pet_image(chosen_pet, "default")
-    
     if new_image:
         pet_placeholder.config(image=new_image, text="", width=150, height=150)
         pet_placeholder.image = new_image 
@@ -124,9 +119,12 @@ def trigger_manual_save():
 def click_start():
     print("Start/Resume clicked!")
     
+    if timer.is_running:
+        print("Timer is running. Ignoring click.")
+        return
+
     # Check if we are resuming a paused BREAK session (even reps)
     if timer.is_paused and timer.reps % 2 == 0:
-        # Keep the default image since they are still on a break
         chosen_pet = selected_pet.get()
         default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
         if default_image:
@@ -141,7 +139,7 @@ def click_start():
             pet_placeholder.config(image=study_image)
             pet_placeholder.image = study_image
         
-    # Trigger the timer engine, passing the manual save as the on_save parameter
+    # Trigger the timer engine
     timer.start_timer(window, timer_display, timer_status, complete_focus_session, trigger_manual_save)
 
 def click_pause():
@@ -163,7 +161,7 @@ def click_give_up():
         
     timer.give_up(window, timer_display, timer_status)
     
-    # --- TRIGGER AUTO-SAVE ---
+    # Auto-save on give up
     userid = entry_userid.get().strip()
     petname = entry_petname.get().strip()
     popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak, xp_earned_now=0)
@@ -180,7 +178,6 @@ def complete_focus_session():
         pet_placeholder.config(image=default_image)
         pet_placeholder.image = default_image
         
-    # --- TRIGGER AUTO-SAVE ---
     userid = entry_userid.get().strip()
     petname = entry_petname.get().strip()
     
@@ -192,7 +189,6 @@ def complete_focus_session():
     if refreshed_data:
         user_history = refreshed_data.get("history", {})
 
-# --- Tasks 3 & 4: Implement Bar Charts & Academic Weeks ---
 def open_progress_chart():
     userid = entry_userid.get().strip()
     if not userid:
@@ -206,20 +202,13 @@ def open_progress_chart():
     chart_window.title(f"{userid}'s Academic Progress")
     chart_window.geometry("450x350")
     
-    # 1. Match the window background color
     chart_window.configure(bg="#ADD8E6") 
 
-    # Order default standard curriculum layout
     academic_weeks = [f"Week {i}" for i in range(1, 15)]
     xp_values = [history.get(week, 0) for week in academic_weeks]
 
-    # 2. Create Figure and explicitly set facecolor to light blue
     fig, ax = plt.subplots(figsize=(6, 4), dpi=90, facecolor='#ADD8E6')
-    
-    # 3. Set the inner plotting area background to match
     ax.set_facecolor('#ADD8E6')
-    
-    # 4. Draw bars with a darker blue border so they pop nicely
     ax.bar(academic_weeks, xp_values, color='#1E90FF', edgecolor='#00008B')
     
     ax.set_title("XP Earned per Academic Week", fontsize=12, fontweight='bold')
@@ -229,12 +218,9 @@ def open_progress_chart():
     plt.xticks(rotation=45, ha="right", fontsize=8)
     plt.tight_layout()
 
-    # 5. Pack it into the canvas frame
     canvas = FigureCanvasTkAgg(fig, master=chart_window)
     canvas.draw()
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-    
-    # 6. Change canvas widget background configuration to eliminate gray borders
     canvas.get_tk_widget().configure(bg="#ADD8E6")
 
 #----------------------FRAME 1: LOGIN-----------------------
@@ -270,7 +256,7 @@ pet_dropdown.config(font=normal_font, width=12)
 pet_dropdown.place(relx=0.35, rely=0.55, anchor=tk.W)
 
 tk.Button(setup_frame, text="Next", font=normal_font, width=10, command=show_timer).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
-tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=20, y=20)
+tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=15, y=15)
 
 #----------------------FRAME 3: TIMER-----------------------
 timer_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
