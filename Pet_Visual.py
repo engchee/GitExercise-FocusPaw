@@ -8,13 +8,13 @@ def get_pet_image(pet_type, state):
     """
     Loads and resizes the requested pet image.
     - pet_type: "Cat", "Dog", or "Ebee"
-    - state: "default", "studying", or "crying"
+    - state: "default", "studying", "crying", or "resting"
     """
-    # 1. Map the pet and state to the exact file names Thana used
+    # 1. Map the pet and state to the exact file names
     file_names = {
-        "Cat": {"default": "cat.jpeg", "studying": "cat_studying.jpeg", "crying": "cat_crying.jpeg"},
-        "Dog": {"default": "puppy.jpeg", "studying": "dog_studying.jpeg", "crying": "dog_crying.jpeg"},
-        "Ebee": {"default": "ebee.jpeg", "studying": "ebee_studying.jpeg", "crying": "ebee_crying.jpeg"}
+        "Cat": {"default": "cat.jpeg", "studying": "cat_studying.jpeg", "crying": "cat_crying.jpeg", "resting": "cat_resting.jpeg"},
+        "Dog": {"default": "puppy.jpeg", "studying": "dog_studying.jpeg", "crying": "dog_crying.jpeg", "resting": "dog_resting.jpeg"},
+        "Ebee": {"default": "ebee.jpeg", "studying": "ebee_studying.jpeg", "crying": "ebee_crying.jpeg", "resting": "ebee_resting.jpeg"}
     }
 
     # Safety check: If the pet or state doesn't exist, stop to prevent a crash.
@@ -34,7 +34,6 @@ def get_pet_image(pet_type, state):
     except Exception as e:
         print(f"Error loading image {file_name}: {e}")
         return None
-
 
 def get_background_image(app_width, app_height):
     """

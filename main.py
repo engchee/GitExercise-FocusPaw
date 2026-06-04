@@ -94,12 +94,12 @@ def click_start():
     
     # Check if we are resuming a paused BREAK session (even reps)
     if timer.is_paused and timer.reps % 2 == 0:
-        # Keep the default image since they are still on a break
+        # Keep the RESTING image since they are still on a break
         chosen_pet = selected_pet.get()
-        default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
-        if default_image:
-            pet_placeholder.config(image=default_image)
-            pet_placeholder.image = default_image
+        rest_image = Pet_Visual.get_pet_image(chosen_pet, "resting")
+        if rest_image:
+            pet_placeholder.config(image=rest_image)
+            pet_placeholder.image = rest_image
             
     # Otherwise, it is a FOCUS session (starting fresh or resuming focus)
     else:
@@ -146,17 +146,19 @@ def complete_focus_session():
     # 1. Math: Add XP
     current_xp = game_math.add_xp(current_xp, 10)     
     
-    # 2. Math: Heal HP (This is your Step 2 code!)
+    # 2. Math: Heal HP
     current_hp = game_math.add_hp(current_hp, 10)
     
     # Update the text on the screen
     update_stats_ui()
    
     chosen_pet = selected_pet.get()
-    default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
-    if default_image:
-        pet_placeholder.config(image=default_image)
-        pet_placeholder.image = default_image
+    
+    # Fetch the RESTING image instead of the default one
+    rest_image = Pet_Visual.get_pet_image(chosen_pet, "resting")
+    if rest_image:
+        pet_placeholder.config(image=rest_image)
+        pet_placeholder.image = rest_image
         
     # --- TRIGGER AUTO-SAVE ---
     userid = entry_userid.get().strip()
