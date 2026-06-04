@@ -1,5 +1,4 @@
 import tkinter as tk
-import tkinter.font as tkFont
 import math
 import pygame
 
@@ -11,8 +10,9 @@ break_min = 5
 timer = None
 reps = 0
 is_paused = False
-is_running = False        #Tracks if the clock is actively ticking
-focus_callback = None     #variable to hold the callback when focus session complete
+is_running = False        # Tracks if the clock is actively ticking
+focus_callback = None     
+save_callback = None      # Holds the save function reference
 
 #------------AUDIO SETTINGS------------
 focus_music_file = "sunshine.mp3"
@@ -36,13 +36,17 @@ def apply_settings(muted, focus_music, break_music):
     elif not is_paused:
         pygame.mixer.music.unpause()
         
-def start_timer(window, timer_text_label, status_label, callback=None):
-    global reps, is_paused, focus_callback, is_running
+def start_timer(window, timer_text_label, status_label, callback=None, on_save=None):
+    global reps, is_paused, focus_callback, is_running, save_callback
     if callback is not None:
-        focus_callback = callback            #Save the callback to memory when Start is clicked
+        focus_callback = callback            
+    if on_save is not None:
+        save_callback = on_save              
+        
     if is_paused:
         resume_timer(window, timer_text_label, status_label)
         return
+        
     reps += 1
     is_running = True
     pygame.mixer.music.stop()
@@ -57,7 +61,8 @@ def start_timer(window, timer_text_label, status_label, callback=None):
                 pygame.mixer.music.play(-1)
             except:
                 print("Background music file not found!")
-        #break_sec = break_min * 60
+                
+        # break_sec = break_min * 60
         break_sec = 5
         count_down(break_sec, window, timer_text_label, status_label)
     else:
@@ -70,7 +75,8 @@ def start_timer(window, timer_text_label, status_label, callback=None):
                 pygame.mixer.music.play(-1)
             except:
                 print("Background music file not found!")
-        #work_sec = work_min * 60
+                
+        # work_sec = work_min * 60
         work_sec = 5
         count_down(work_sec, window, timer_text_label, status_label)
 
@@ -137,8 +143,9 @@ def count_down(count, window, timer_text_label, status_label):
 
         if reps % 2 == 1:
             if focus_callback is not None:
-                focus_callback()                #Trigger the XP Math
-            #--------PLAY ALARM SOUND--------
+                focus_callback()                
+            if save_callback is not None:
+                save_callback()                 # Save on complete focus automatically
             try:
                 pygame.mixer.music.load("alarm1.mp3")
                 pygame.mixer.music.play()
@@ -162,5 +169,3 @@ def count_down(count, window, timer_text_label, status_label):
                 timer_text_label.config(text="00:00")
 
             window.after(2000, next_focus)
-
-
