@@ -43,8 +43,8 @@ user_history = {} # Caches historical data for graphing updates
 
 # --- AUDIO VARIABLES ---
 mute_var = tk.BooleanVar(value=False)
-focus_music_var = tk.StringVar(value="Sunshine")
-break_music_var = tk.StringVar(value="Happy Home")
+focus_music_var = tk.StringVar(value="Option")
+break_music_var = tk.StringVar(value="Option")
 
 focus_options = ["Sunshine", "Lofi"]
 break_options = ["Happy Home", "Dance with Me"]
@@ -256,7 +256,7 @@ pet_dropdown.config(font=normal_font, width=12)
 pet_dropdown.place(relx=0.35, rely=0.55, anchor=tk.W)
 
 tk.Button(setup_frame, text="Next", font=normal_font, width=10, command=show_timer).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
-tk.Button(setup_frame, text="⚙ Settings", font=normal_font, command=show_settings).place(x=15, y=15)
+tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=15, y=15)
 
 #----------------------FRAME 3: TIMER-----------------------
 timer_frame = tk.Frame(window, width=500, height=500, bg=bg_color)

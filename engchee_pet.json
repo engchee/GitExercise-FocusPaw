@@ -2,8 +2,11 @@
     "user id": "engchee",
     "pet name": "beebee",
     "pet type": "Ebee",
-    "current_xp": 50,
+    "current_xp": 70,
     "current_hp": 90,
     "streak": 2,
-    "last_login": "2026-06-04"
+    "last_login": "2026-06-04",
+    "history": {
+        "Week 14": 20
+    }
 }
