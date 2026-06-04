@@ -2,8 +2,11 @@
     "user id": "lisha",
     "pet name": "fluffy",
     "pet type": "Dog",
-    "current_xp": 0,
-    "current_hp": 100,
+    "current_xp": 30,
+    "current_hp": 70,
     "streak": 1,
-    "last_login": "2026-05-13"
+    "last_login": "2026-05-28",
+    "history": {
+        "Week 13": 20
+    }
 }
