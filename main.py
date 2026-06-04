@@ -39,9 +39,7 @@ bg_image = Pet_Visual.get_background_image(app_width, app_height)
 current_xp = 0
 current_hp = 100
 current_streak = 1
-<<<<<<< HEAD
 user_history = {} # Caches historical data for graphing updates
-=======
 
 # --- AUDIO VARIABLES ---
 mute_var = tk.BooleanVar(value=False)
@@ -59,7 +57,6 @@ def save_settings_and_return():        #Sends choices to timer.py and goes back 
     timer.apply_settings(mute_var.get(), focus_music_var.get(), break_music_var.get())
     settings_frame.place_forget()
     setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
->>>>>>> main
 
 # --- 3. NAVIGATION & LOGIC FUNCTIONS ---
 def show_setup():
@@ -67,27 +64,19 @@ def show_setup():
     setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 def show_timer():
-<<<<<<< HEAD
     global current_xp, current_hp, current_streak, user_history
     
-=======
-    global current_xp, current_hp, current_streak
-    
     # 1. Grab what the user typed in the boxes
->>>>>>> main
     userid = entry_userid.get().strip()
     petname = entry_petname.get().strip()
     chosen_pet = selected_pet.get()
     
-<<<<<<< HEAD
     # Task 2: Validate fields before changing views
     if not userid or not petname:
         messagebox.showwarning("Missing Fields", "Please type your User ID and Pet Name before continuing!")
         return
     
-=======
     # 2. --- TRIGGER POPUP.PY LOAD FUNCTION ---
->>>>>>> main
     loaded_data = popup.load_data(userid)
     
     if loaded_data:
@@ -95,26 +84,15 @@ def show_timer():
         current_xp = loaded_data.get("current_xp", 0)
         current_hp = loaded_data.get("current_hp", 100)
         current_streak = loaded_data.get("streak", 1)
-<<<<<<< HEAD
         user_history = loaded_data.get("history", {})
-=======
-        # Update the dropdown to match their saved pet
->>>>>>> main
-        chosen_pet = loaded_data.get("pet type", "Cat")
-        selected_pet.set(chosen_pet)
+        
+        # We do NOT overwrite the pet choice here so users can still switch pets!
     else:
         print(f"New user {userid} created!")
         current_xp = 0
         current_hp = 100
         current_streak = 1
-<<<<<<< HEAD
         user_history = {}
-
-    setup_frame.place_forget()
-    timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-    
-    new_image = Pet_Visual.get_pet_image(chosen_pet, "default")
-=======
 
     # Hide Setup, shows Timer
     setup_frame.place_forget()
@@ -123,7 +101,6 @@ def show_timer():
     # Ask Pet_Visual for the default image of that pet
     new_image = Pet_Visual.get_pet_image(chosen_pet, "default")
     
->>>>>>> main
     if new_image:
         pet_placeholder.config(image=new_image, text="", width=150, height=150)
         pet_placeholder.image = new_image 
@@ -134,11 +111,7 @@ def show_timer():
 
 def update_stats_ui():
     current_level = game_math.get_level(current_xp)
-<<<<<<< HEAD
-    stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100 | Streak: {current_streak}")
-=======
     stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100 | 🔥Streak: {current_streak}")
->>>>>>> main
 
 def trigger_manual_save():
     """Callback wrapper triggered by timer.py automation flows"""
@@ -149,17 +122,6 @@ def trigger_manual_save():
 
 # --- UI BUTTON HOOKS ---
 def click_start():
-<<<<<<< HEAD
-    print("Focusing...")
-    chosen_pet = selected_pet.get()
-    study_image = Pet_Visual.get_pet_image(chosen_pet, "studying")
-    if study_image:
-        pet_placeholder.config(image=study_image)
-        pet_placeholder.image = study_image
-        
-    # Passes trigger_manual_save as the 5th parameter (on_save callback)
-    timer.start_timer(window, timer_display, timer_status, complete_focus_session, trigger_manual_save)
-=======
     print("Start/Resume clicked!")
     
     # Check if we are resuming a paused BREAK session (even reps)
@@ -179,9 +141,8 @@ def click_start():
             pet_placeholder.config(image=study_image)
             pet_placeholder.image = study_image
         
-    # Trigger the timer engine
-    timer.start_timer(window, timer_display, timer_status, complete_focus_session)
->>>>>>> main
+    # Trigger the timer engine, passing the manual save as the on_save parameter
+    timer.start_timer(window, timer_display, timer_status, complete_focus_session, trigger_manual_save)
 
 def click_pause():
     print("Paused")
@@ -202,16 +163,10 @@ def click_give_up():
         
     timer.give_up(window, timer_display, timer_status)
     
-<<<<<<< HEAD
-    userid = entry_userid.get().strip()
-    petname = entry_petname.get().strip()
-    popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak, xp_earned_now=0)
-=======
     # --- TRIGGER AUTO-SAVE ---
     userid = entry_userid.get().strip()
     petname = entry_petname.get().strip()
-    popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak)
->>>>>>> main
+    popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak, xp_earned_now=0)
 
 def complete_focus_session():
     global current_xp, user_history
@@ -225,14 +180,14 @@ def complete_focus_session():
         pet_placeholder.config(image=default_image)
         pet_placeholder.image = default_image
         
-<<<<<<< HEAD
+    # --- TRIGGER AUTO-SAVE ---
     userid = entry_userid.get().strip()
     petname = entry_petname.get().strip()
     
     # Save explicitly logging 10 XP towards history tracking
     popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak, xp_earned_now=10)
     
-    # Refresh local memory storage reference
+    # Refresh local memory storage reference for graphs
     refreshed_data = popup.load_data(userid)
     if refreshed_data:
         user_history = refreshed_data.get("history", {})
@@ -281,12 +236,6 @@ def open_progress_chart():
     
     # 6. Change canvas widget background configuration to eliminate gray borders
     canvas.get_tk_widget().configure(bg="#ADD8E6")
-=======
-    # --- TRIGGER AUTO-SAVE ---
-    userid = entry_userid.get().strip()
-    petname = entry_petname.get().strip()
-    popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak)
->>>>>>> main
 
 #----------------------FRAME 1: LOGIN-----------------------
 login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
@@ -321,10 +270,7 @@ pet_dropdown.config(font=normal_font, width=12)
 pet_dropdown.place(relx=0.35, rely=0.55, anchor=tk.W)
 
 tk.Button(setup_frame, text="Next", font=normal_font, width=10, command=show_timer).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
-<<<<<<< HEAD
-=======
 tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=20, y=20)
->>>>>>> main
 
 #----------------------FRAME 3: TIMER-----------------------
 timer_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
