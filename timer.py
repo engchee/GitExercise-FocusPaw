@@ -11,6 +11,7 @@ break_min = 5
 timer = None
 reps = 0
 is_paused = False
+is_running = False        #Tracks if the clock is actively ticking
 focus_callback = None     #variable to hold the callback when focus session complete
 
 #------------AUDIO SETTINGS------------
@@ -36,14 +37,14 @@ def apply_settings(muted, focus_music, break_music):
         pygame.mixer.music.unpause()
         
 def start_timer(window, timer_text_label, status_label, callback=None):
-    global reps, is_paused, focus_callback
+    global reps, is_paused, focus_callback, is_running
     if callback is not None:
         focus_callback = callback            #Save the callback to memory when Start is clicked
     if is_paused:
         resume_timer(window, timer_text_label, status_label)
         return
     reps += 1
-
+    is_running = True
     pygame.mixer.music.stop()
 
     if reps % 2 == 0:
@@ -77,12 +78,12 @@ paused_count = 0
 remaining_count = 0
 
 def pause_timer(window, timer_text_label, status_label):
-    global paused_count, is_paused
+    global paused_count, is_paused, is_running
     if timer is None or is_paused:
         return
     paused_count = remaining_count
     is_paused = True
-
+    is_running = False
     print("Timer paused.(˶ᵔ ᵕ ᵔ˶)")
     status_label.config(text="Paused", fg="orange") 
 
@@ -92,8 +93,9 @@ def pause_timer(window, timer_text_label, status_label):
         window.after_cancel(timer)
 
 def resume_timer(window, timer_text_label, status_label):
-    global is_paused
+    global is_paused, is_running
     is_paused = False
+    is_running = True
     pygame.mixer.music.unpause()
     if reps % 2 == 1:
         status_label.config(text="Focusing...", fg="green")
@@ -102,10 +104,10 @@ def resume_timer(window, timer_text_label, status_label):
     count_down(paused_count, window, timer_text_label, status_label)
 
 def give_up(window, timer_text_label, status_label):
-    global reps, timer, is_paused
+    global reps, timer, is_paused, is_running
     reps = 0
     is_paused = False
-
+    is_running = False
     print("User gave up.")
     status_label.config(text="Gave Up...Deducting HP(╥‸╥)", fg="red")
     pygame.mixer.music.stop()
@@ -115,7 +117,7 @@ def give_up(window, timer_text_label, status_label):
     timer_text_label.config(text="00:00")
 
 def count_down(count, window, timer_text_label, status_label):
-    global remaining_count, reps
+    global remaining_count, reps, is_running
     remaining_count = count
 
     count_min = math.floor(count/60)
@@ -130,6 +132,7 @@ def count_down(count, window, timer_text_label, status_label):
         global timer
         timer = window.after(1000, count_down, count-1, window, timer_text_label, status_label)
     else:
+        is_running = False
         print("Times up!")
 
         if reps % 2 == 1:

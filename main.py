@@ -76,9 +76,6 @@ def show_timer():
         current_xp = loaded_data.get("current_xp", 0)
         current_hp = loaded_data.get("current_hp", 100)
         current_streak = loaded_data.get("streak", 1)
-        # Update the dropdown to match their saved pet
-        chosen_pet = loaded_data.get("pet type", "Cat")
-        selected_pet.set(chosen_pet)
     else:
         print(f"New user {userid} created!")
         current_xp = 0
@@ -109,6 +106,10 @@ def update_stats_ui():
 def click_start():
     print("Start/Resume clicked!")
     
+    if timer.is_running:
+        print("Timer is running. Ignoring click.")
+        return
+
     # Check if we are resuming a paused BREAK session (even reps)
     if timer.is_paused and timer.reps % 2 == 0:
         # Keep the default image since they are still on a break
