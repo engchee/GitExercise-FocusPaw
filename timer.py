@@ -1,6 +1,7 @@
 import tkinter as tk
 import math
 import pygame
+from plyer import notification
 
 pygame.mixer.init()
 
@@ -87,6 +88,7 @@ def pause_timer(window, timer_text_label, status_label):
     global paused_count, is_paused, is_running
     if timer is None or is_paused:
         return
+    window.after_cancel(timer)
     paused_count = remaining_count
     is_paused = True
     is_running = False
@@ -111,6 +113,9 @@ def resume_timer(window, timer_text_label, status_label):
 
 def give_up(window, timer_text_label, status_label):
     global reps, timer, is_paused, is_running
+    if timer is not None:
+        window.after_cancel(timer)
+        timer = None
     reps = 0
     is_paused = False
     is_running = False
@@ -123,7 +128,7 @@ def give_up(window, timer_text_label, status_label):
     timer_text_label.config(text="00:00")
 
 def count_down(count, window, timer_text_label, status_label):
-    global remaining_count, reps, is_running
+    global remaining_count, reps, is_running, is_paused, timer, paused_count
     remaining_count = count
 
     count_min = math.floor(count/60)
@@ -141,19 +146,42 @@ def count_down(count, window, timer_text_label, status_label):
         is_running = False
         print("Times up!")
 
+        is_running = False
+        is_paused = False
+        timer = None
+        paused_count = 0
+
+        #focus session complete
         if reps % 2 == 1:
             if focus_callback is not None:
                 focus_callback()                
             if save_callback is not None:
                 save_callback()                 # Save on complete focus automatically
+
+            notification.notify(
+                title = "FocusPaw🐾",
+                message = "Focus complete! You earned XP & HP!😁",
+                app_name = "FocusPaw",
+                timeout = 2
+            )
+
             try:
                 pygame.mixer.music.load("alarm1.mp3")
                 pygame.mixer.music.play()
             except:
                 print("Audio file not found!")
             status_label.config(text="Timer finished! Gaining XP & HP!(ᵔᴥᵔ)\nBreak starting...", fg="green")
-            window.after(3000, start_timer, window, timer_text_label, status_label)
+            window.after(3000, start_timer, window, timer_text_label, status_label)         #after 3s start break
+        #break session complete
         else:
+
+            notification.notify(
+                title = "FocusPaw🐾",
+                message = "Break finished! Ready to focus?🤓",
+                app_name = "FocusPaw",
+                timeout = 2
+            )
+
             try:
                 pygame.mixer.music.load("alarm1.mp3")
                 pygame.mixer.music.play()
@@ -163,9 +191,9 @@ def count_down(count, window, timer_text_label, status_label):
 
             def next_focus():
                 global reps
-                reps = 0
+                reps = 0      #reset back to start new focus session
                 pygame.mixer.music.stop()
                 status_label.config(text="Break over!\nReady to focus again?(˶ᵔ ᵕ ᵔ˶)", fg="blue")
                 timer_text_label.config(text="00:00")
 
-            window.after(2000, next_focus)
+            window.after(2000, next_focus)    #after 2s change to ready foccus status
