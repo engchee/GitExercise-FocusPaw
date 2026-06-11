@@ -14,7 +14,7 @@ import popup
 
 # --- 1. MAIN WINDOW SETUP ---
 window = tk.Tk()
-window.title("FocusPaw")
+window.title("FocusPaw🐾")
 
 bg_color = "#ADD8E6"  # Light Blue
 window.configure(bg=bg_color)
@@ -49,11 +49,11 @@ break_music_var = tk.StringVar(value="Options")
 focus_options = ["Sunshine", "Lofi"]
 break_options = ["Happy Home", "Dance with Me"]
 
-def show_settings():                   #Hides the Setup frame and opens Settings
+def show_settings():                   
     setup_frame.place_forget()
     settings_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-def save_settings_and_return():        #Sends choices to timer.py and goes back to Setup
+def save_settings_and_return():        
     timer.apply_settings(mute_var.get(), focus_music_var.get(), break_music_var.get())
     settings_frame.place_forget()
     setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
@@ -65,17 +65,21 @@ def show_setup():
 
 def show_timer():
     global current_xp, current_hp, current_streak, user_history
-        # 1. Grab what the user typed in the boxes
+    
     userid = entry_userid.get().strip()
     petname = entry_petname.get().strip()
     chosen_pet = selected_pet.get()
     
-    # Task 2: Validate fields before changing views
+    # Validate fields before changing views
     if not userid or not petname:
         messagebox.showwarning("Missing Fields", "Please type your User ID and Pet Name before continuing!")
         return
-    
-    # 2. --- TRIGGER POPUP.PY LOAD FUNCTION ---
+    #Validate music selection
+    if not mute_var.get():
+        if focus_music_var.get() == "Options" or break_music_var.get() == "Options":
+            messagebox.showwarning("Missing Music", "Please click the 🎵 button to choose your Focus and Break music before continuing!")
+            return
+
     loaded_data = popup.load_data(userid)
     
     if loaded_data:
@@ -84,9 +88,8 @@ def show_timer():
         current_hp = loaded_data.get("current_hp", 100)
         current_streak = loaded_data.get("streak", 1)
         user_history = loaded_data.get("history", {})
-        # Update the dropdown to match their saved pet
-        chosen_pet = loaded_data.get("pet type", "Cat")
-        selected_pet.set(chosen_pet)
+        
+        # Note: We purposely leave selected_pet alone here so users can switch pets dynamically!
     else:
         print(f"New user {userid} created!")
         current_xp = 0
@@ -98,15 +101,6 @@ def show_timer():
     timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
     
     new_image = Pet_Visual.get_pet_image(chosen_pet, "default")
-
-
-    # Hide Setup, shows Timer
-    setup_frame.place_forget()
-    timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-    
-    # Ask Pet_Visual for the default image of that pet
-    new_image = Pet_Visual.get_pet_image(chosen_pet, "default")
-    
     if new_image:
         pet_placeholder.config(image=new_image, text="", width=150, height=150)
         pet_placeholder.image = new_image 
@@ -117,10 +111,10 @@ def show_timer():
 
 def update_stats_ui():
     current_level = game_math.get_level(current_xp)
-    stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100 | 🔥Streak: {current_streak}")
+    stats_label.config(text=f"XP: {current_xp} | HP: {current_hp}/100 | 🔥Streak: {current_streak}")
 
 def trigger_manual_save():
-    """Callback wrapper triggered by timer.py automation flows"""
+    #Callback wrapper triggered by timer.py automation flows
     userid = entry_userid.get().strip()
     petname = entry_petname.get().strip()
     chosen_pet = selected_pet.get()
@@ -130,9 +124,12 @@ def trigger_manual_save():
 def click_start():
     print("Start/Resume clicked!")
     
+    if timer.is_running:
+        print("Timer is running. Ignoring click.")
+        return
+
     # Check if we are resuming a paused BREAK session (even reps)
     if timer.is_paused and timer.reps % 2 == 0:
-        # Keep the default image since they are still on a break
         chosen_pet = selected_pet.get()
         default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
         if default_image:
@@ -148,7 +145,7 @@ def click_start():
             pet_placeholder.image = study_image
         
     # Trigger the timer engine
-    timer.start_timer(window, timer_display, timer_status, complete_focus_session)
+    timer.start_timer(window, timer_display, timer_status, complete_focus_session, trigger_manual_save)
 
 def click_pause():
     print("Paused")
@@ -169,11 +166,10 @@ def click_give_up():
         
     timer.give_up(window, timer_display, timer_status)
     
-
-    # --- TRIGGER AUTO-SAVE ---
+    # Auto-save on give up
     userid = entry_userid.get().strip()
     petname = entry_petname.get().strip()
-    popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak)
+    popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak, xp_earned_now=0)
 
 def complete_focus_session():
     global current_xp, user_history
@@ -193,12 +189,11 @@ def complete_focus_session():
     # Save explicitly logging 10 XP towards history tracking
     popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak, xp_earned_now=10)
     
-    # Refresh local memory storage reference
+    # Refresh local memory storage reference for graphs
     refreshed_data = popup.load_data(userid)
     if refreshed_data:
         user_history = refreshed_data.get("history", {})
 
-# --- Tasks 3 & 4: Implement Bar Charts & Academic Weeks ---
 def open_progress_chart():
     userid = entry_userid.get().strip()
     if not userid:
@@ -212,20 +207,13 @@ def open_progress_chart():
     chart_window.title(f"{userid}'s Academic Progress")
     chart_window.geometry("450x350")
     
-    # 1. Match the window background color
     chart_window.configure(bg="#ADD8E6") 
 
-    # Order default standard curriculum layout
     academic_weeks = [f"Week {i}" for i in range(1, 15)]
     xp_values = [history.get(week, 0) for week in academic_weeks]
 
-    # 2. Create Figure and explicitly set facecolor to light blue
     fig, ax = plt.subplots(figsize=(6, 4), dpi=90, facecolor='#ADD8E6')
-    
-    # 3. Set the inner plotting area background to match
     ax.set_facecolor('#ADD8E6')
-    
-    # 4. Draw bars with a darker blue border so they pop nicely
     ax.bar(academic_weeks, xp_values, color='#1E90FF', edgecolor='#00008B')
     
     ax.set_title("XP Earned per Academic Week", fontsize=12, fontweight='bold')
@@ -235,25 +223,17 @@ def open_progress_chart():
     plt.xticks(rotation=45, ha="right", fontsize=8)
     plt.tight_layout()
 
-    # 5. Pack it into the canvas frame
     canvas = FigureCanvasTkAgg(fig, master=chart_window)
     canvas.draw()
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-    
-    # 6. Change canvas widget background configuration to eliminate gray borders
     canvas.get_tk_widget().configure(bg="#ADD8E6")
-    # --- TRIGGER AUTO-SAVE ---
-    userid = entry_userid.get().strip()
-    petname = entry_petname.get().strip()
-    chosen_pet = selected_pet.get()
-    popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak)
 
 #----------------------FRAME 1: LOGIN-----------------------
 login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
     tk.Label(login_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Label(login_frame, text="FocusPaw", font=title_font, bg=bg_color).place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+tk.Label(login_frame, text="FocusPaw🐾", font=title_font, bg=bg_color).place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 tk.Button(login_frame, text="Login/Sign Up", font=button_font, width=15, height=2, command=show_setup).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
@@ -281,7 +261,7 @@ pet_dropdown.config(font=normal_font, width=12)
 pet_dropdown.place(relx=0.35, rely=0.55, anchor=tk.W)
 
 tk.Button(setup_frame, text="Next", font=normal_font, width=10, command=show_timer).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
-tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=20, y=20)
+tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=15, y=15)
 
 #----------------------FRAME 3: TIMER-----------------------
 timer_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
@@ -299,7 +279,7 @@ timer_status.place(relx=0.5, rely=0.23, anchor=tk.CENTER)
 timer_display = tk.Label(timer_frame, text="25:00", font=("Consolas", 40, "bold"), bg=bg_color, fg="#333333")
 timer_display.place(relx=0.5, rely=0.65, anchor=tk.CENTER)
 
-stats_label = tk.Label(timer_frame, text="Level: 0 | XP: 0 | HP: 100/100", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
+stats_label = tk.Label(timer_frame, text="XP: 0 | HP: 100/100", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
 stats_label.place(relx=0.5, rely=0.76, anchor=tk.CENTER)
 
 # Controls & Analytics View Button Dashboard
@@ -308,7 +288,7 @@ tk.Button(timer_frame, text="Pause", font=normal_font, width=8, command=click_pa
 tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.8, rely=0.85, anchor=tk.CENTER)
 
 # Graph shortcut button added to bottom floor level
-tk.Button(timer_frame, text="View Progress Chart", font=normal_font, width=22, command=open_progress_chart, bg="#FFF8DC").place(relx=0.5, rely=0.93, anchor=tk.CENTER)
+tk.Button(timer_frame, text="View Progress Chart", font=normal_font, width=22, command=open_progress_chart, bg="#FFF8DC").place(relx=0.5, rely=0.95, anchor=tk.CENTER)
 
 #----------------------FRAME 4: SETTINGS-----------------------
 settings_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
