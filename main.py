@@ -17,7 +17,7 @@ import popup
 
 # --- 1. MAIN WINDOW SETUP ---
 window = tk.Tk()
-window.title("FocusPaw")
+window.title("FocusPaw🐾")
 
 bg_color = "#ADD8E6"  # Light Blue
 window.configure(bg=bg_color)
@@ -79,7 +79,12 @@ def show_timer():
     if not userid or not petname:
         messagebox.showwarning("Missing Fields", "Please type your User ID and Pet Name before continuing!")
         return
-    
+    #Validate music selection
+    if not mute_var.get():
+        if focus_music_var.get() == "Options" or break_music_var.get() == "Options":
+            messagebox.showwarning("Missing Music", "Please click the 🎵 button to choose your Focus and Break music before continuing!")
+            return
+
     loaded_data = popup.load_data(userid)
     
     if loaded_data:
@@ -111,10 +116,14 @@ def show_timer():
 
 def update_stats_ui():
     current_level = game_math.get_level(current_xp)
+<<<<<<< HEAD
     stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100 | Streak: {current_streak}")
+=======
+    stats_label.config(text=f"XP: {current_xp} | HP: {current_hp}/100 | 🔥Streak: {current_streak}")
+>>>>>>> b2e45c60f330e65ef5b6b29aae9936588f11651f
 
 def trigger_manual_save():
-    """Callback wrapper triggered by timer.py automation flows"""
+    #Callback wrapper triggered by timer.py automation flows
     userid = entry_userid.get().strip()
     petname = entry_petname.get().strip()
     chosen_pet = selected_pet.get()
@@ -314,7 +323,7 @@ login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
     tk.Label(login_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Label(login_frame, text="FocusPaw", font=title_font, bg=bg_color).place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+tk.Label(login_frame, text="FocusPaw🐾", font=title_font, bg=bg_color).place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 tk.Button(login_frame, text="Login/Sign Up", font=button_font, width=15, height=2, command=show_setup).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
@@ -360,7 +369,7 @@ timer_status.place(relx=0.5, rely=0.23, anchor=tk.CENTER)
 timer_display = tk.Label(timer_frame, text="25:00", font=("Consolas", 40, "bold"), bg=bg_color, fg="#333333")
 timer_display.place(relx=0.5, rely=0.65, anchor=tk.CENTER)
 
-stats_label = tk.Label(timer_frame, text="Level: 0 | XP: 0 | HP: 100/100", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
+stats_label = tk.Label(timer_frame, text="XP: 0 | HP: 100/100", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
 stats_label.place(relx=0.5, rely=0.76, anchor=tk.CENTER)
 
 # Musical Navigation Button Hook
@@ -372,6 +381,7 @@ tk.Button(timer_frame, text="Pause", font=normal_font, width=8, command=click_pa
 tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.8, rely=0.83, anchor=tk.CENTER)
 
 # Graph shortcut button added to bottom floor level
+<<<<<<< HEAD
 tk.Button(timer_frame, text="View Progress Chart", font=normal_font, width=22, command=open_progress_chart, bg="#FFF8DC").place(relx=0.5, rely=0.90, anchor=tk.CENTER)
 
 # TASK 3: Reset Progress button placed safely inside window limits
@@ -385,6 +395,9 @@ tk.Button(
     fg="#D8000C"       # Dark red text
 ).place(relx=0.5, rely=0.96, anchor=tk.CENTER)
 tk.Button(timer_frame, text="Reset Pet", font=normal_font, width=12, command=click_reset_pet, bg="#FFC0CB").place(relx=0.5, rely=0.32, anchor=tk.CENTER)
+=======
+tk.Button(timer_frame, text="View Progress Chart", font=normal_font, width=22, command=open_progress_chart, bg="#FFF8DC").place(relx=0.5, rely=0.95, anchor=tk.CENTER)
+>>>>>>> b2e45c60f330e65ef5b6b29aae9936588f11651f
 
 #----------------------FRAME 4: SETTINGS-----------------------
 settings_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
