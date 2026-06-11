@@ -3,6 +3,7 @@ import math
 import pygame
 from plyer import notification
 
+
 pygame.mixer.init()
 
 #---------TIMER FUNCTIONS---------

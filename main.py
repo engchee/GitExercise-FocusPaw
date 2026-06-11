@@ -116,6 +116,7 @@ def show_timer():
 
 def update_stats_ui():
     current_level = game_math.get_level(current_xp)
+
     stats_label.config(text=f"XP: {current_xp} | HP: {current_hp}/100 | 🔥Streak: {current_streak}")
 
 def trigger_manual_save():
