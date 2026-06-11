@@ -37,7 +37,7 @@ def get_pet_image(pet_type, state):
 
 def get_background_image(app_width, app_height):
     """
-    Loads and resizes the background image to perfectly fit the master window.
+    Loads and resizes the standard background image to perfectly fit the master window.
     """
     try:
         bg_path = os.path.join(script_dir, "background.jpeg")
@@ -46,4 +46,17 @@ def get_background_image(app_width, app_height):
         return ImageTk.PhotoImage(resized_img)
     except Exception as e:
         print(f"Error loading background image: {e}")
+        return None 
+
+def get_dark_background_image(app_width, app_height):
+    """
+    Loads and resizes the dark mode background image.
+    """
+    try:
+        bg_path = os.path.join(script_dir, "background (dark mode).png")
+        original_img = Image.open(bg_path)
+        resized_img = original_img.resize((app_width, app_height), Image.Resampling.LANCZOS)
+        return ImageTk.PhotoImage(resized_img)
+    except Exception as e:
+        print(f"Error loading dark background image: {e}")
         return None

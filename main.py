@@ -29,8 +29,10 @@ title_font = tKFont.Font(family="Courier", size=46, weight="bold", slant="italic
 button_font = tKFont.Font(family="Consolas", size=25, weight="bold")
 normal_font = tKFont.Font(family="Consolas", size=14)
 
-# Ask Pet_Visual.py for the background image
+# Ask Pet_Visual.py for the background images
 bg_image = Pet_Visual.get_background_image(app_width, app_height)
+dark_bg_image = Pet_Visual.get_dark_background_image(app_width, app_height)
+is_dark_mode = False
 
 # --- TRACKING VARIABLES ---
 current_xp = 0
@@ -45,16 +47,41 @@ break_music_var = tk.StringVar(value="Options")
 focus_options = ["Sunshine", "Lofi"]
 break_options = ["Happy Home", "Dance with Me"]
 
-def show_settings():                   #Hides the Setup frame and opens Settings
+
+# --- 3. NAVIGATION & LOGIC FUNCTIONS ---
+def toggle_dark_mode():
+    """Swaps the background images across all frames"""
+    global is_dark_mode
+    if not dark_bg_image:
+        print("Dark mode image missing! Check file name.")
+        return
+
+    if is_dark_mode:
+        # Turn Dark Mode OFF
+        login_bg_label.config(image=bg_image)
+        setup_bg_label.config(image=bg_image)
+        timer_bg_label.config(image=bg_image)
+        settings_bg_label.config(image=bg_image)
+        is_dark_mode = False
+    else:
+        # Turn Dark Mode ON
+        login_bg_label.config(image=dark_bg_image)
+        setup_bg_label.config(image=dark_bg_image)
+        timer_bg_label.config(image=dark_bg_image)
+        settings_bg_label.config(image=dark_bg_image)
+        is_dark_mode = True
+
+def show_settings():
+    """Hides the Setup frame and opens Settings"""
     setup_frame.place_forget()
     settings_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-def save_settings_and_return():        #Sends choices to timer.py and goes back to Setup
+def save_settings_and_return():
+    """Sends choices to timer.py and goes back to Setup"""
     timer.apply_settings(mute_var.get(), focus_music_var.get(), break_music_var.get())
     settings_frame.place_forget()
     setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-# --- 3. NAVIGATION & LOGIC FUNCTIONS ---
 def show_setup():
     """Hides Login and shows Setup"""
     login_frame.place_forget()
@@ -171,7 +198,11 @@ def complete_focus_session():
 # ---------------------- FRAME 1: LOGIN -----------------------
 login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
-    tk.Label(login_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
+    login_bg_label = tk.Label(login_frame, image=bg_image)
+    login_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+# Dark Mode Button
+tk.Button(login_frame, text="🌙", font=normal_font, command=toggle_dark_mode).place(x=20, y=20)
 
 tk.Label(login_frame, text="FocusPaw", font=title_font, bg=bg_color).place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 tk.Button(login_frame, text="Login/Sign Up", font=button_font, width=15, height=2, command=show_setup).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
@@ -180,7 +211,12 @@ login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 # ---------------------- FRAME 2: SETUP -----------------------
 setup_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
-    tk.Label(setup_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
+    setup_bg_label = tk.Label(setup_frame, image=bg_image)
+    setup_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+# Settings & Dark Mode Buttons
+tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=20, y=20)
+tk.Button(setup_frame, text="🌙", font=normal_font, command=toggle_dark_mode).place(x=70, y=20)
 
 tk.Label(setup_frame, text="Setup", font=title_font, bg=bg_color).place(relx=0.5, rely=0.15, anchor=tk.CENTER)
 
@@ -201,17 +237,17 @@ pet_dropdown.config(font=normal_font, width=12)
 pet_dropdown.place(relx=0.35, rely=0.55, anchor=tk.W)
 
 tk.Button(setup_frame, text="Next", font=normal_font, width=10, command=show_timer).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
-tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=20, y=20)
+
 
 #----------------------FRAME 3: TIMER-----------------------
 timer_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
-    tk.Label(timer_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
+    timer_bg_label = tk.Label(timer_frame, image=bg_image)
+    timer_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 tk.Label(timer_frame, text="Focus", font=title_font, bg=bg_color).place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
 # --- LOCKED UI PLACEHOLDER FIX ---
-# This frame acts as a rigid container so the layout doesn't "jump"
 pet_box = tk.Frame(timer_frame, width=150, height=150, bg="white", relief="sunken", borderwidth=2)
 pet_box.place(relx=0.5, rely=0.43, anchor=tk.CENTER)
 pet_box.pack_propagate(False) # Prevents the box from shrinking
@@ -233,10 +269,12 @@ tk.Button(timer_frame, text="Start", font=normal_font, width=8, command=click_st
 tk.Button(timer_frame, text="Pause", font=normal_font, width=8, command=click_pause).place(relx=0.5, rely=0.85, anchor=tk.CENTER)
 tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.75, rely=0.85, anchor=tk.CENTER)
 
+
 #----------------------FRAME 4: SETTINGS-----------------------
 settings_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
-    tk.Label(settings_frame, image=bg_image).place(x=0, y=0, relwidth=1, relheight=1)
+    settings_bg_label = tk.Label(settings_frame, image=bg_image)
+    settings_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 tk.Label(settings_frame, text="Settings", font=title_font, bg=bg_color).place(relx=0.5, rely=0.15, anchor=tk.CENTER)
 
