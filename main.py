@@ -394,7 +394,6 @@ tk.Button(
 ).place(relx=0.5, rely=0.96, anchor=tk.CENTER)
 tk.Button(timer_frame, text="Reset Pet", font=normal_font, width=12, command=click_reset_pet, bg="#FFC0CB").place(relx=0.5, rely=0.32, anchor=tk.CENTER)
 
-
 #----------------------FRAME 4: SETTINGS-----------------------
 settings_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
