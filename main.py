@@ -116,11 +116,9 @@ def show_timer():
 
 def update_stats_ui():
     current_level = game_math.get_level(current_xp)
-<<<<<<< HEAD
+
     stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100 | Streak: {current_streak}")
-=======
     stats_label.config(text=f"XP: {current_xp} | HP: {current_hp}/100 | 🔥Streak: {current_streak}")
->>>>>>> b2e45c60f330e65ef5b6b29aae9936588f11651f
 
 def trigger_manual_save():
     #Callback wrapper triggered by timer.py automation flows
@@ -381,7 +379,7 @@ tk.Button(timer_frame, text="Pause", font=normal_font, width=8, command=click_pa
 tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.8, rely=0.83, anchor=tk.CENTER)
 
 # Graph shortcut button added to bottom floor level
-<<<<<<< HEAD
+ 
 tk.Button(timer_frame, text="View Progress Chart", font=normal_font, width=22, command=open_progress_chart, bg="#FFF8DC").place(relx=0.5, rely=0.90, anchor=tk.CENTER)
 
 # TASK 3: Reset Progress button placed safely inside window limits
@@ -395,9 +393,7 @@ tk.Button(
     fg="#D8000C"       # Dark red text
 ).place(relx=0.5, rely=0.96, anchor=tk.CENTER)
 tk.Button(timer_frame, text="Reset Pet", font=normal_font, width=12, command=click_reset_pet, bg="#FFC0CB").place(relx=0.5, rely=0.32, anchor=tk.CENTER)
-=======
-tk.Button(timer_frame, text="View Progress Chart", font=normal_font, width=22, command=open_progress_chart, bg="#FFF8DC").place(relx=0.5, rely=0.95, anchor=tk.CENTER)
->>>>>>> b2e45c60f330e65ef5b6b29aae9936588f11651f
+
 
 #----------------------FRAME 4: SETTINGS-----------------------
 settings_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
