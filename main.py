@@ -44,14 +44,13 @@ current_hp = 100
 current_streak = 1
 user_history = {} # Caches historical data for graphing updates
 
-# --- Dropdown state setups from Settings (Screenshots) ---
-focus_options = ["Lofi Beats", "Rain ambient", "Forest Birds"]
-break_options = ["Upbeat pop", "Chiptune cheer", "Ocean waves"]
-focus_music_var = tk.StringVar(window)
-focus_music_var.set(focus_options[0])
-break_music_var = tk.StringVar(window)
-break_music_var.set(break_options[0])
-mute_var = tk.BooleanVar(window)
+# --- AUDIO VARIABLES ---
+mute_var = tk.BooleanVar(value=False)
+focus_music_var = tk.StringVar(value="Options")
+break_music_var = tk.StringVar(value="Options")
+
+focus_options = ["Sunshine", "Lofi"]
+break_options = ["Happy Home", "Dance with Me"]
 
 # --- 3. NAVIGATION & LOGIC FUNCTIONS ---
 def show_setup():
@@ -59,13 +58,14 @@ def show_setup():
     setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 def show_settings():
-    """Switches view onto your configurations settings panel."""
+    #Switches view onto your configurations settings panel.
     timer_frame.place_forget()
     setup_frame.place_forget()
     settings_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 def leave_settings():
-    """Saves choices and routes view back to Focus dashboard."""
+    timer.apply_settings(mute_var.get(), focus_music_var.get(), break_music_var.get())
+    #Saves choices and routes view back to Focus dashboard.
     settings_frame.place_forget()
     timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
@@ -116,11 +116,7 @@ def show_timer():
 
 def update_stats_ui():
     current_level = game_math.get_level(current_xp)
-<<<<<<< HEAD
-    stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100 | Streak: {current_streak}")
-=======
     stats_label.config(text=f"XP: {current_xp} | HP: {current_hp}/100 | 🔥Streak: {current_streak}")
->>>>>>> b2e45c60f330e65ef5b6b29aae9936588f11651f
 
 def trigger_manual_save():
     #Callback wrapper triggered by timer.py automation flows
@@ -381,8 +377,7 @@ tk.Button(timer_frame, text="Pause", font=normal_font, width=8, command=click_pa
 tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.8, rely=0.83, anchor=tk.CENTER)
 
 # Graph shortcut button added to bottom floor level
-<<<<<<< HEAD
-tk.Button(timer_frame, text="View Progress Chart", font=normal_font, width=22, command=open_progress_chart, bg="#FFF8DC").place(relx=0.5, rely=0.90, anchor=tk.CENTER)
+tk.Button(timer_frame, text="📶", font=normal_font, command=open_progress_chart, bg="#FFF8DC").place(x=20, y=20)
 
 # TASK 3: Reset Progress button placed safely inside window limits
 tk.Button(
@@ -395,9 +390,6 @@ tk.Button(
     fg="#D8000C"       # Dark red text
 ).place(relx=0.5, rely=0.96, anchor=tk.CENTER)
 tk.Button(timer_frame, text="Reset Pet", font=normal_font, width=12, command=click_reset_pet, bg="#FFC0CB").place(relx=0.5, rely=0.32, anchor=tk.CENTER)
-=======
-tk.Button(timer_frame, text="View Progress Chart", font=normal_font, width=22, command=open_progress_chart, bg="#FFF8DC").place(relx=0.5, rely=0.95, anchor=tk.CENTER)
->>>>>>> b2e45c60f330e65ef5b6b29aae9936588f11651f
 
 #----------------------FRAME 4: SETTINGS-----------------------
 settings_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
