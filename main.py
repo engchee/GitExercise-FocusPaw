@@ -44,14 +44,13 @@ current_hp = 100
 current_streak = 1
 user_history = {} # Caches historical data for graphing updates
 
-# --- Dropdown state setups from Settings (Screenshots) ---
-focus_options = ["Lofi Beats", "Rain ambient", "Forest Birds"]
-break_options = ["Upbeat pop", "Chiptune cheer", "Ocean waves"]
-focus_music_var = tk.StringVar(window)
-focus_music_var.set(focus_options[0])
-break_music_var = tk.StringVar(window)
-break_music_var.set(break_options[0])
-mute_var = tk.BooleanVar(window)
+# --- AUDIO VARIABLES ---
+mute_var = tk.BooleanVar(value=False)
+focus_music_var = tk.StringVar(value="Options")
+break_music_var = tk.StringVar(value="Options")
+
+focus_options = ["Sunshine", "Lofi"]
+break_options = ["Happy Home", "Dance with Me"]
 
 # --- 3. NAVIGATION & LOGIC FUNCTIONS ---
 def show_setup():
@@ -59,15 +58,15 @@ def show_setup():
     setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 def show_settings():
-    """Switches view onto your configurations settings panel."""
+    #Switches view onto your configurations settings panel.
     timer_frame.place_forget()
     setup_frame.place_forget()
     settings_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-def leave_settings():
-    """Saves choices and routes view back to Focus dashboard."""
+def save_settings_and_return():        
+    timer.apply_settings(mute_var.get(), focus_music_var.get(), break_music_var.get())
     settings_frame.place_forget()
-    timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 def show_timer():
     global current_xp, current_hp, current_streak, user_history
@@ -117,7 +116,6 @@ def show_timer():
 def update_stats_ui():
     current_level = game_math.get_level(current_xp)
 
-    stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100 | Streak: {current_streak}")
     stats_label.config(text=f"XP: {current_xp} | HP: {current_hp}/100 | 🔥Streak: {current_streak}")
 
 def trigger_manual_save():
@@ -129,13 +127,29 @@ def trigger_manual_save():
 
 # --- UI BUTTON HOOKS ---
 def click_start():
+    # ---PREVENT SPAM CLICKING & GHOST LOOPS---
+    if timer.is_running:
+        print("Timer is already active. Ignoring click.")
+        return
+
     print("Focusing...")
-    chosen_pet = selected_pet.get()
-    study_image = Pet_Visual.get_pet_image(chosen_pet, "studying")
-    if study_image:
-        pet_placeholder.config(image=study_image)
-        pet_placeholder.image = study_image
-        
+    
+    # Check if we are resuming a paused BREAK session (even reps)
+    if timer.is_paused and timer.reps % 2 == 0:
+        chosen_pet = selected_pet.get()
+        default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
+        if default_image:
+            pet_placeholder.config(image=default_image)
+            pet_placeholder.image = default_image
+            
+    # Otherwise, it is a FOCUS session (starting fresh or resuming focus)
+    else:
+        chosen_pet = selected_pet.get()
+        study_image = Pet_Visual.get_pet_image(chosen_pet, "studying")
+        if study_image:
+            pet_placeholder.config(image=study_image)
+            pet_placeholder.image = study_image
+            
     timer.start_timer(window, timer_display, timer_status, complete_focus_session, trigger_manual_save)
 
 def click_pause():
@@ -176,59 +190,13 @@ def complete_focus_session():
     userid = entry_userid.get().strip()
     petname = entry_petname.get().strip()
     
+    # Save explicitly logging 10 XP towards history tracking
     popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak, xp_earned_now=10)
     
+    # Refresh local memory storage reference for graphs
     refreshed_data = popup.load_data(userid)
     if refreshed_data:
         user_history = refreshed_data.get("history", {})
-
-def click_reset_pet():
-    global current_xp, current_hp, current_streak, user_history
-    
-    userid = entry_userid.get().strip()
-    petname = entry_petname.get().strip()
-    chosen_pet = selected_pet.get()
-    
-    if not userid:
-        messagebox.showwarning("Error", "No active User ID found to reset!")
-        return
-        
-    # Double check confirmation with user so they don't click it accidentally
-    confirm = messagebox.askyesno("Reset Pet", "Are you sure you want to reset your pet's levels, HP, and stats to baseline zero?")
-    if not confirm:
-        return
-        
-    # 1. Reset memory variables to 0
-    current_xp = 0
-    current_hp = 0
-    current_streak = 0
-    user_history = {} # Wipes current history log cache
-    
-    # 2. Update UI indicators immediately
-    update_stats_ui()
-    
-    # 3. Swap current animation image panel view back to default profile state
-    default_image = Pet_Visual.get_pet_image(chosen_pet, "default")
-    if default_image:
-        pet_placeholder.config(image=default_image)
-        pet_placeholder.image = default_image
-
-    # 4. Save clean data state structure back down onto file disk 
-    popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak, xp_earned_now=0)
-    
-    # Force rewrite JSON directly to purge history structural dictionary clean
-    path = popup.get_file_path(userid)
-    if path and os.path.exists(path):
-        try:
-            with open(path, "r") as f:
-                data = json.load(f)
-            data["history"] = {} # Hard wipe historical logging structure 
-            with open(path, "w") as f:
-                json.dump(data, f, indent=4)
-        except Exception as e:
-            print(f"Error resetting history mapping records: {e}")
-            
-    messagebox.showinfo("Reset Complete", "Pet stats and history maps successfully reset to 0!")
 
 # --- TASK 4: FRONTEND POPUP CONTROL ---
 def reset_progress():
@@ -367,20 +335,19 @@ timer_status.place(relx=0.5, rely=0.23, anchor=tk.CENTER)
 timer_display = tk.Label(timer_frame, text="25:00", font=("Consolas", 40, "bold"), bg=bg_color, fg="#333333")
 timer_display.place(relx=0.5, rely=0.65, anchor=tk.CENTER)
 
-stats_label = tk.Label(timer_frame, text="XP: 0 | HP: 100/100", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
+stats_label = tk.Label(timer_frame, text=f"XP: {current_xp} | HP: {current_hp}/100 | 🔥Streak: {current_streak}", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
 stats_label.place(relx=0.5, rely=0.76, anchor=tk.CENTER)
 
 # Musical Navigation Button Hook
 tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=20, y=20)
 
 # Controls & Analytics View Button Dashboard
-tk.Button(timer_frame, text="Start", font=normal_font, width=8, command=click_start).place(relx=0.2, rely=0.83, anchor=tk.CENTER)
-tk.Button(timer_frame, text="Pause", font=normal_font, width=8, command=click_pause).place(relx=0.5, rely=0.83, anchor=tk.CENTER)
-tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.8, rely=0.83, anchor=tk.CENTER)
+tk.Button(timer_frame, text="Start", font=normal_font, width=8, command=click_start).place(relx=0.2, rely=0.85, anchor=tk.CENTER)
+tk.Button(timer_frame, text="Pause", font=normal_font, width=8, command=click_pause).place(relx=0.5, rely=0.85, anchor=tk.CENTER)
+tk.Button(timer_frame, text="Give Up", font=normal_font, width=8, command=click_give_up).place(relx=0.8, rely=0.85, anchor=tk.CENTER)
 
 # Graph shortcut button added to bottom floor level
- 
-tk.Button(timer_frame, text="View Progress Chart", font=normal_font, width=22, command=open_progress_chart, bg="#FFF8DC").place(relx=0.5, rely=0.90, anchor=tk.CENTER)
+tk.Button(timer_frame, text="📶", font=normal_font, command=open_progress_chart, bg="#FFF8DC").place(x=20, y=20)
 
 # TASK 3: Reset Progress button placed safely inside window limits
 tk.Button(
@@ -391,8 +358,7 @@ tk.Button(
     command=reset_progress, 
     bg="#FFC0CB",      # Light pink background
     fg="#D8000C"       # Dark red text
-).place(relx=0.5, rely=0.96, anchor=tk.CENTER)
-tk.Button(timer_frame, text="Reset Pet", font=normal_font, width=12, command=click_reset_pet, bg="#FFC0CB").place(relx=0.5, rely=0.32, anchor=tk.CENTER)
+).place(relx=0.5, rely=0.94, anchor=tk.CENTER)
 
 #----------------------FRAME 4: SETTINGS-----------------------
 settings_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
@@ -413,7 +379,7 @@ tk.Label(settings_frame, text="Break Music:", font=normal_font, bg=bg_color).pla
 tk.OptionMenu(settings_frame, break_music_var, *break_options).place(relx=0.35, rely=0.55, anchor=tk.W)
 
 # Save Button
-tk.Button(settings_frame, text="Save & Back", font=normal_font, width=12, command=leave_settings).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
+tk.Button(settings_frame, text="Save & Back", font=normal_font, width=12, command=save_settings_and_return).place(relx=0.5, rely=0.75, anchor=tk.CENTER)
 
 # --- START APP ---
 # This loop stays at the absolute bottom of the script!

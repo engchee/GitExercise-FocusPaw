@@ -15,7 +15,7 @@ def get_file_path(userid):
 def get_academic_week():
     """Calculates the current academic week based on a semester start date."""
     try:
-        semester_start = datetime.strptime("2026-03-02", "%Y-%m-%d").date() # Example start date
+        semester_start = datetime.strptime("2026-03-30", "%Y-%m-%d").date() 
         today = date.today()
         
         if today < semester_start:
