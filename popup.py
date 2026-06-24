@@ -1,9 +1,9 @@
 import json
 import os
-from datetime import date
+from datetime import date, datetime
 
 # --- FILE PATH SETUP ---
-script_dir = os.path.dirname(os.path.abspath(__file__)) 
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 def get_file_path(userid):
     """Generates the file path based on the provided User ID."""
@@ -11,63 +11,94 @@ def get_file_path(userid):
         return None
     return os.path.join(script_dir, f"{userid}_pet.json")
 
+# --- ACADEMIC WEEK CALCULATION ---
+def get_academic_week():
+    """Calculates the current academic week based on a semester start date."""
+    try:
+        semester_start = datetime.strptime("2026-03-02", "%Y-%m-%d").date() # Example start date
+        today = date.today()
+        
+        if today < semester_start:
+            return "Pre-Sem"
+            
+        days_diff = (today - semester_start).days
+        week_number = (days_diff // 7) + 1
+        
+        if week_number > 14:  # Adjust max weeks if needed
+            return "Post-Sem"
+        return f"Week {week_number}"
+    except Exception:
+        return "Week 1"
+
 # --- STREAK CALCULATION LOGIC ---
 def calculate_streak(saved_date_str, current_streak):
     today = date.today()
     
-    # If there is no date OR the current streak is 0, start it at 1
     if not saved_date_str or current_streak == 0:
-        return 1 
+        return 1
 
     last_login = date.fromisoformat(saved_date_str)
     delta = (today - last_login).days
 
     if delta == 1:
-        return current_streak + 1  # Next day, increase streak
+        return current_streak + 1 
     elif delta > 1:
-        return 1                   # Missed a day, reset to 1
+        return 1                  
     else:
-        return max(current_streak, 1) # Same day, ensure it's at least 1
+        return max(current_streak, 1)
 
 # --- PARAMETERIZED CRUD FUNCTIONS ---
 def load_data(userid):
-    """
-    Loads user data by User ID, calculates the updated streak, 
-    and returns the stats as a dictionary.
-    """
+    """Loads user data, calculates updated streak, and returns stats."""
     path = get_file_path(userid)
     if path and os.path.exists(path):
         try:
             with open(path, "r") as f:
                 data = json.load(f)
                 
-                # Calculate the updated streak on load
                 saved_date = data.get("last_login", "")
                 old_streak = data.get("streak", 0)
                 new_streak = calculate_streak(saved_date, old_streak)
                 
-                # Update the dictionary with the correct active streak
                 data["streak"] = new_streak
-                
-                return data # Send the dictionary back to main.py
+                if "history" not in data:
+                    data["history"] = {}
+                    
+                return data
         except Exception as e:
             print(f"Error loading data for {userid}: {e}")
             return None
-            
-    # Return None if the file doesn't exist yet (New User)
-    return None 
+    return None
 
-def save_data(userid, petname, pet_type, current_xp, current_hp, streak):
-    """
-    Accepts specific variables from main.py or timer.py and overwrites the JSON file.
-    """
+# NEW: Updated to accept coins, owned_items, and equipped_item!
+def save_data(userid, petname, pet_type, current_xp, current_hp, streak, coins, owned_items, equipped_item, xp_earned_now=0):
+    """Accepts variables and saves/updates the JSON file with history logs and shop items."""
     if not userid:
         print("Error: Cannot save without a User ID.")
         return
     
+    # Safety check for lists
+    if owned_items is None:
+        owned_items = []
+        
     path = get_file_path(userid)
+    history = {}
     
-    # Pack the incoming variables into a clean dictionary
+    # Try to load existing history first so we don't overwrite old data
+    if path and os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                existing_data = json.load(f)
+                history = existing_data.get("history", {})
+        except Exception:
+            pass
+
+    # Log XP to current academic week if XP was earned
+    if xp_earned_now > 0:
+        current_week = get_academic_week()
+        history[current_week] = history.get(current_week, 0) + xp_earned_now
+    
+    # NEW: Added coins, owned_items, and equipped_item to the save dictionary
     data = {
         "user id": userid,
         "pet name": petname,
@@ -75,7 +106,11 @@ def save_data(userid, petname, pet_type, current_xp, current_hp, streak):
         "current_xp": current_xp,
         "current_hp": current_hp,
         "streak": streak, 
-        "last_login": date.today().isoformat() # Automatically stamp today's date
+        "coins": coins,
+        "owned_items": owned_items,
+        "equipped_item": equipped_item,
+        "last_login": date.today().isoformat(),
+        "history": history
     }
     
     try:
@@ -84,3 +119,17 @@ def save_data(userid, petname, pet_type, current_xp, current_hp, streak):
         print(f"Data successfully auto-saved for {userid}!")
     except Exception as e:
         print(f"Failed to auto-save: {e}")
+
+# --- TASK 1 & 2: BACKEND FILE DELETION ---
+def delete_data(userid):
+    """Permanently deletes the JSON data file for the given User ID."""
+    path = get_file_path(userid)
+    if path:
+        try:
+            os.remove(path)
+            print(f"Data for user {userid} successfully deleted.")
+            return True
+        except Exception as e:
+            print(f"Error deleting data safely for {userid}: {e}")
+            return False
+    return False

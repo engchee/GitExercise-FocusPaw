@@ -4,29 +4,40 @@ from PIL import Image, ImageTk
 # Get the directory where the script is located
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-def get_pet_image(pet_type, state):
+def get_pet_image(pet_type, state, equipped_item=None):
     """
-    Loads and resizes the requested pet image.
-    - pet_type: "Cat", "Dog", or "Ebee"
-    - state: "default", "studying", "crying", or "resting"
+    Loads the requested pet image based on its state and what it is wearing.
     """
-    # 1. Map the pet and state to the exact file names
+    # 1. Base names without the ".jpeg"
+    # Note: I changed "puppy" to "dog" here to match your new file names!
     file_names = {
-        "Cat": {"default": "cat.jpeg", "studying": "cat_studying.jpeg", "crying": "cat_crying.jpeg", "resting": "cat_resting.jpeg"},
-        "Dog": {"default": "puppy.jpeg", "studying": "dog_studying.jpeg", "crying": "dog_crying.jpeg", "resting": "dog_resting.jpeg"},
-        "Ebee": {"default": "ebee.jpeg", "studying": "ebee_studying.jpeg", "crying": "ebee_crying.jpeg", "resting": "ebee_resting.jpeg"}
+        "Cat": {"default": "cat", "studying": "cat_studying", "crying": "cat_crying", "resting": "cat_resting"},
+        "Dog": {"default": "dog", "studying": "dog_studying", "crying": "dog_crying", "resting": "dog_resting"},
+        "Ebee": {"default": "ebee", "studying": "ebee_studying", "crying": "ebee_crying", "resting": "ebee_resting"}
     }
 
-    # Safety check: If the pet or state doesn't exist, stop to prevent a crash.
     if pet_type not in file_names or state not in file_names[pet_type]:
         print(f"Error: Could not find {pet_type} in {state} state.")
         return None
 
-    # 2. Build the exact path to the file
-    file_name = file_names[pet_type][state]
+    # Get the base name (e.g., "dog_studying")
+    base_name = file_names[pet_type][state]
+
+    # 2. Add the item name to the end of the file string
+    if equipped_item == "Top Hat":
+        file_name = f"{base_name}_top hat.jpeg"
+    elif equipped_item == "Glasses":
+        file_name = f"{base_name}_glasses.jpeg"
+    elif equipped_item == "Bowtie":
+        file_name = f"{base_name}_bowtie.jpeg"
+    else:
+        # If they aren't wearing anything, just use the normal file
+        file_name = f"{base_name}.jpeg"
+
+    # 3. Build the exact path to the file
     img_path = os.path.join(script_dir, file_name)
 
-    # 3. Open, resize, and convert for Tkinter
+    # 4. Open, resize, and convert for Tkinter
     try:
         original_img = Image.open(img_path)
         resized_img = original_img.resize((150, 150), Image.Resampling.LANCZOS)
@@ -36,9 +47,7 @@ def get_pet_image(pet_type, state):
         return None
 
 def get_background_image(app_width, app_height):
-    """
-    Loads and resizes the standard background image to perfectly fit the master window.
-    """
+    """Loads and resizes the standard background image."""
     try:
         bg_path = os.path.join(script_dir, "background.jpeg")
         original_img = Image.open(bg_path)
@@ -49,9 +58,7 @@ def get_background_image(app_width, app_height):
         return None 
 
 def get_dark_background_image(app_width, app_height):
-    """
-    Loads and resizes the dark mode background image.
-    """
+    """Loads and resizes the dark mode background image."""
     try:
         bg_path = os.path.join(script_dir, "background (dark mode).png")
         original_img = Image.open(bg_path)
