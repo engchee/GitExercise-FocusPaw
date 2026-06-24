@@ -70,7 +70,6 @@ def load_data(userid):
             return None
     return None
 
-# NEW: Updated to accept coins, owned_items, and equipped_item!
 def save_data(userid, petname, pet_type, current_xp, current_hp, streak, coins, owned_items, equipped_item, xp_earned_now=0):
     """Accepts variables and saves/updates the JSON file with history logs and shop items."""
     if not userid:
@@ -98,7 +97,6 @@ def save_data(userid, petname, pet_type, current_xp, current_hp, streak, coins, 
         current_week = get_academic_week()
         history[current_week] = history.get(current_week, 0) + xp_earned_now
     
-    # NEW: Added coins, owned_items, and equipped_item to the save dictionary
     data = {
         "user id": userid,
         "pet name": petname,

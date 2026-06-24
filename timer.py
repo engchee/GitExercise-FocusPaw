@@ -3,6 +3,7 @@ import math
 import pygame
 from plyer import notification
 
+
 pygame.mixer.init()
 
 #---------TIMER FUNCTIONS---------
@@ -88,18 +89,18 @@ def pause_timer(window, timer_text_label, status_label):
     global paused_count, is_paused, is_running
     if timer is None or is_paused:
         return
+        
+    # --- CLEAN CANCELLATION (Kills loop immediately) ---
     window.after_cancel(timer)
+    
     paused_count = remaining_count
     is_paused = True
     is_running = False
+    
     print("Timer paused.(˶ᵔ ᵕ ᵔ˶)")
     status_label.config(text="Paused", fg="orange") 
-
     pygame.mixer.music.pause()
-
-    if timer is not None:
-        window.after_cancel(timer)
-
+    
 def resume_timer(window, timer_text_label, status_label):
     global is_paused, is_running
     is_paused = False
@@ -113,20 +114,21 @@ def resume_timer(window, timer_text_label, status_label):
 
 def give_up(window, timer_text_label, status_label):
     global reps, timer, is_paused, is_running
+    
+    # --- CLEAN CANCELLATION (Kills loop immediately) ---
     if timer is not None:
         window.after_cancel(timer)
         timer = None
+        
     reps = 0
     is_paused = False
     is_running = False
+    
     print("User gave up.")
     status_label.config(text="Gave Up...Deducting HP(╥‸╥)", fg="red")
     pygame.mixer.music.stop()
-    if timer is not None:
-        window.after_cancel(timer)
-        timer = None
     timer_text_label.config(text="00:00")
-
+    
 def count_down(count, window, timer_text_label, status_label):
     global remaining_count, reps, is_running, is_paused, timer, paused_count
     remaining_count = count
@@ -143,13 +145,12 @@ def count_down(count, window, timer_text_label, status_label):
         global timer
         timer = window.after(1000, count_down, count-1, window, timer_text_label, status_label)
     else:
-        is_running = False
         print("Times up!")
 
-        is_running = False
-        is_paused = False
-        timer = None
-        paused_count = 0
+        is_running = False   #memory reset for next session
+        is_paused = False    #memory reset
+        timer = None         #destroy the timer loop memory
+        paused_count = 0     #clear the pause memory
 
         #focus session complete
         if reps % 2 == 1:

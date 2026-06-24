@@ -2,11 +2,12 @@
     "user id": "engchee",
     "pet name": "beebee",
     "pet type": "Ebee",
-    "current_xp": 230,
-    "current_hp": 70,
-    "streak": 3,
-    "last_login": "2026-06-05",
+    "current_xp": 40,
+    "current_hp": 90,
+    "streak": 1,
+    "last_login": "2026-06-12",
     "history": {
-        "Week 14": 180
+        "Week 14": 180,
+        "Post-Sem": 40
     }
 }
