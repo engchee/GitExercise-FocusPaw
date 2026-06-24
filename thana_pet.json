@@ -1,9 +1,17 @@
 {
     "user id": "thana",
-    "pet name": "tom",
-    "pet type": "Cat",
-    "current_xp": 0,
-    "current_hp": 100,
-    "streak": 1,
-    "last_login": "2026-05-13"
+    "pet name": "fluffy",
+    "pet type": "Dog",
+    "current_xp": 330,
+    "current_hp": 90,
+    "streak": 2,
+    "coins": 20,
+    "owned_items": [
+        "Bowtie",
+        "Top Hat",
+        "Glasses"
+    ],
+    "equipped_item": null,
+    "last_login": "2026-06-24",
+    "history": {}
 }

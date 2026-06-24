@@ -70,12 +70,16 @@ def load_data(userid):
             return None
     return None
 
-def save_data(userid, petname, pet_type, current_xp, current_hp, streak, xp_earned_now=0):
-    """Accepts variables and saves/updates the JSON file with history logs."""
+def save_data(userid, petname, pet_type, current_xp, current_hp, streak, coins, owned_items, equipped_item, xp_earned_now=0):
+    """Accepts variables and saves/updates the JSON file with history logs and shop items."""
     if not userid:
         print("Error: Cannot save without a User ID.")
         return
     
+    # Safety check for lists
+    if owned_items is None:
+        owned_items = []
+        
     path = get_file_path(userid)
     history = {}
     
@@ -100,6 +104,9 @@ def save_data(userid, petname, pet_type, current_xp, current_hp, streak, xp_earn
         "current_xp": current_xp,
         "current_hp": current_hp,
         "streak": streak, 
+        "coins": coins,
+        "owned_items": owned_items,
+        "equipped_item": equipped_item,
         "last_login": date.today().isoformat(),
         "history": history
     }
