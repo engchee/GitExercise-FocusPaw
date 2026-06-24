@@ -116,8 +116,7 @@ def show_timer():
     update_stats_ui()
 
 def update_stats_ui():
-    current_level = game_math.get_level(current_xp)
-    stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100 | 🔥: {current_streak} | 🪙: {current_coins}")
+    stats_label.config(text=f"XP: {current_xp} | HP: {current_hp}/100 | 🔥: {current_streak} | 🪙: {current_coins}")
 
 # --- SHOP LOGIC ---
 def show_shop():
@@ -257,7 +256,6 @@ if bg_image:
     setup_bg_label = tk.Label(setup_frame, image=bg_image)
     setup_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-# REMOVED SHOP BUTTON FROM HERE
 tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=20, y=20)
 tk.Button(setup_frame, text="🌙", font=normal_font, command=toggle_dark_mode).place(x=70, y=20)
 
@@ -284,7 +282,6 @@ if bg_image:
     timer_bg_label = tk.Label(timer_frame, image=bg_image)
     timer_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-# ADDED SHOP BUTTON HERE
 tk.Button(timer_frame, text="🛒 Shop", font=normal_font, command=show_shop).place(x=20, y=20)
 
 tk.Label(timer_frame, text="Focus", font=title_font, bg=bg_color).place(relx=0.5, rely=0.1, anchor=tk.CENTER)
@@ -302,7 +299,8 @@ timer_status.place(relx=0.5, rely=0.23, anchor=tk.CENTER)
 timer_display = tk.Label(timer_frame, text="25:00", font=("Consolas", 40, "bold"), bg=bg_color, fg="#333333")
 timer_display.place(relx=0.5, rely=0.65, anchor=tk.CENTER)
 
-stats_label = tk.Label(timer_frame, text="Level: 0 | XP: 0 | HP: 100/100 | 🔥: 1 | 🪙: 0", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
+# UPDATED: Level removed from default text
+stats_label = tk.Label(timer_frame, text="XP: 0 | HP: 100/100 | 🔥: 1 | 🪙: 0", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
 stats_label.place(relx=0.5, rely=0.76, anchor=tk.CENTER)
 
 tk.Button(timer_frame, text="Start", font=normal_font, width=8, command=click_start).place(relx=0.25, rely=0.85, anchor=tk.CENTER)
@@ -337,7 +335,6 @@ tk.Button(shop_frame, text="👓 Cool Glasses (30 Coins)", font=normal_font, wid
 tk.Button(shop_frame, text="🎀 Cute Bowtie (20 Coins)", font=normal_font, width=25, command=lambda: buy_item("Bowtie", 20)).place(relx=0.5, rely=0.6, anchor=tk.CENTER)
 tk.Button(shop_frame, text="🚫 Remove Item", font=normal_font, width=25, command=unequip_item).place(relx=0.5, rely=0.7, anchor=tk.CENTER)
 
-# UPDATED BUTTON TEXT TO "BACK TO FOCUS"
 tk.Button(shop_frame, text="Back to Focus", font=normal_font, width=15, command=leave_shop).place(relx=0.5, rely=0.8, anchor=tk.CENTER)
 
 # --- START APP ---
