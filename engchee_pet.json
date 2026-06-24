@@ -5,7 +5,10 @@
     "current_xp": 40,
     "current_hp": 90,
     "streak": 1,
-    "last_login": "2026-06-12",
+    "coins": 0,
+    "owned_items": [],
+    "equipped_item": null,
+    "last_login": "2026-06-24",
     "history": {
         "Week 14": 180,
         "Post-Sem": 40
