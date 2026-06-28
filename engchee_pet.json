@@ -2,17 +2,19 @@
     "user id": "engchee",
     "pet name": "beebee",
     "pet type": "Ebee",
-    "current_xp": 110,
+    "current_xp": 160,
     "current_hp": 100,
     "streak": 2,
-    "coins": 90,
+    "coins": 60,
     "owned_items": [
-        "Bowtie"
+        "Bowtie",
+        "Top Hat",
+        "Glasses"
     ],
-    "equipped_item": "Bowtie",
+    "equipped_item": "Glasses",
     "last_login": "2026-06-29",
     "history": {
         "Week 13": 10,
-        "Week 14": 100
+        "Week 14": 150
     }
 }

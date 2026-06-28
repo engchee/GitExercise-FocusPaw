@@ -417,8 +417,8 @@ if bg_image:
     timer_bg_label = tk.Label(timer_frame, image=bg_image)
     timer_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Button(timer_frame, text="🛒 Shop", font=normal_font, command=show_shop).place(x=20, y=20)
-tk.Button(timer_frame, text="📶", font=normal_font, command=open_progress_chart, bg="#FFF8DC").place(x=130, y=20)
+tk.Button(timer_frame, text="🛒 Shop", font=normal_font, command=show_shop).place(x=480, y=20, anchor=tk.NE)
+tk.Button(timer_frame, text="📶", font=normal_font, command=open_progress_chart, bg="#FFF8DC").place(x=480, y=70, anchor=tk.NE)
 
 tk.Label(timer_frame, text="Focus", font=title_font, bg=bg_color).place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
@@ -436,7 +436,7 @@ timer_status.place(relx=0.5, rely=0.23, anchor=tk.CENTER)
 timer_display = tk.Label(timer_frame, text="25:00", font=("Consolas", 40, "bold"), bg=bg_color, fg="#333333")
 timer_display.place(relx=0.5, rely=0.65, anchor=tk.CENTER)
 
-stats_label = tk.Label(timer_frame, text="Level: 0 | XP: 0 | HP: 100/100 | 🔥: 1 | 🪙: 0", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
+stats_label = tk.Label(timer_frame, text="XP: 0 | HP: 100/100 | 🔥: 1 | 🪙: 0", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
 stats_label.place(relx=0.5, rely=0.76, anchor=tk.CENTER)
 
 tk.Button(timer_frame, text="Start", font=normal_font, width=8, command=click_start).place(relx=0.25, rely=0.85, anchor=tk.CENTER)
