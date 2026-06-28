@@ -15,6 +15,7 @@ is_paused = False
 is_running = False        # Tracks if the clock is actively ticking
 focus_callback = None     
 save_callback = None      # Holds the save function reference
+break_callback = None
 
 #------------AUDIO SETTINGS------------
 focus_music_file = "sunshine.mp3"
@@ -38,12 +39,14 @@ def apply_settings(muted, focus_music, break_music):
     elif not is_paused:
         pygame.mixer.music.unpause()
         
-def start_timer(window, timer_text_label, status_label, callback=None, on_save=None):
-    global reps, is_paused, focus_callback, is_running, save_callback
+def start_timer(window, timer_text_label, status_label, callback=None, on_save=None, on_break_complete=None):
+    global reps, is_paused, focus_callback, is_running, save_callback, break_callback
     if callback is not None:
         focus_callback = callback            
     if on_save is not None:
-        save_callback = on_save              
+        save_callback = on_save  
+    if on_break_complete is not None:
+        break_callback = on_break_complete            
         
     if is_paused:
         resume_timer(window, timer_text_label, status_label)
@@ -196,5 +199,8 @@ def count_down(count, window, timer_text_label, status_label):
                 pygame.mixer.music.stop()
                 status_label.config(text="Break over!\nReady to focus again?(˶ᵔ ᵕ ᵔ˶)", fg="blue")
                 timer_text_label.config(text="00:00")
+
+                if break_callback is not None:
+                    break_callback()
 
             window.after(2000, next_focus)    #after 2s change to ready foccus status
