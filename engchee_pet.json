@@ -3,7 +3,7 @@
     "pet name": "beebee",
     "pet type": "Ebee",
     "current_xp": 160,
-    "current_hp": 100,
+    "current_hp": 90,
     "streak": 2,
     "coins": 60,
     "owned_items": [
@@ -11,7 +11,7 @@
         "Top Hat",
         "Glasses"
     ],
-    "equipped_item": "Glasses",
+    "equipped_item": null,
     "last_login": "2026-06-29",
     "history": {
         "Week 13": 10,

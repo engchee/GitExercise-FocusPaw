@@ -209,7 +209,6 @@ def unequip_item():
 
 # --- UI BUTTON HOOKS ---
 def click_start():
-    # Eng Chee's Anti-Spam Shield
     if timer.is_running:
         print("Timer is already active. Ignoring click.")
         return
@@ -295,7 +294,6 @@ def complete_break_session():
         pet_placeholder.config(image=default_img)
         pet_placeholder.image = default_img
 
-# --- TASK 4: FRONTEND POPUP CONTROL (Lisha's Code) ---
 def reset_progress():
     global current_xp, current_hp, current_streak, user_history, current_coins, owned_items, equipped_item
     
@@ -422,7 +420,6 @@ tk.Button(timer_frame, text="📶", font=normal_font, command=open_progress_char
 
 tk.Label(timer_frame, text="Focus", font=title_font, bg=bg_color).place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
-# Thana's new dynamic pet box!
 pet_box = tk.Frame(timer_frame, width=150, height=150, bg="white", relief="sunken", borderwidth=2)
 pet_box.place(relx=0.5, rely=0.43, anchor=tk.CENTER)
 pet_box.pack_propagate(False)
