@@ -164,7 +164,7 @@ def count_down(count, window, timer_text_label, status_label):
 
             notification.notify(
                 title = "FocusPaw🐾",
-                message = "Focus complete! You earned XP & HP!😁",
+                message = "Focus complete! You earned XP, HP & Coins!😁",
                 app_name = "FocusPaw",
                 timeout = 2
             )
@@ -174,7 +174,7 @@ def count_down(count, window, timer_text_label, status_label):
                 pygame.mixer.music.play()
             except:
                 print("Audio file not found!")
-            status_label.config(text="Timer finished! Gaining XP & HP!(ᵔᴥᵔ)\nBreak starting...", fg="green")
+            status_label.config(text="Timer finished! Gaining XP, HP & Coins!(ᵔᴥᵔ)\nBreak starting...", fg="green")
             window.after(3000, start_timer, window, timer_text_label, status_label)         #after 3s start break
         #break session complete
         else:
