@@ -3,6 +3,7 @@ import tkinter.font as tKFont
 from tkinter import messagebox
 import os
 import json
+from datetime import datetime, timedelta
 
 # Matplotlib integration
 import matplotlib.pyplot as plt
@@ -53,8 +54,8 @@ mute_var = tk.BooleanVar(value=False)
 focus_music_var = tk.StringVar(value="Options")
 break_music_var = tk.StringVar(value="Options")
 
-focus_options = ["Options", "Sunshine", "Lofi"]
-break_options = ["Options", "Happy Home", "Dance with Me"]
+focus_options = ["Sunshine", "Lofi"]
+break_options = ["Happy Home", "Dance with Me"]
 
 # --- 3. NAVIGATION & LOGIC FUNCTIONS ---
 def toggle_dark_mode():
@@ -98,7 +99,14 @@ def show_timer():
     global current_xp, current_hp, current_streak, current_coins, owned_items, equipped_item, user_history
     
     userid = entry_userid.get().strip()
+    petname = entry_petname.get().strip()  # <--- Added this back!
     chosen_pet = selected_pet.get()
+    
+    # --- FIELD VALIDATION SHIELD ---
+    if not userid or not petname:
+        messagebox.showwarning("Missing Fields", "Please type your User ID and Pet Name before continuing!")
+        return
+    # -------------------------------
     
     # Music Validation Shield
     if not mute_var.get():
@@ -128,12 +136,13 @@ def show_timer():
         pet_placeholder.image = new_image 
         
     update_stats_ui()
-    # Lock in daily streak
-    popup.save_data(userid, entry_petname.get().strip(), chosen_pet, current_xp, current_hp, current_streak, current_coins, owned_items, equipped_item, xp_earned_now=0)
+    
+    # Lock in daily streak (Using the petname variable safely)
+    popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak, current_coins, owned_items, equipped_item, xp_earned_now=0)
 
 def update_stats_ui():
     current_level = game_math.get_level(current_xp)
-    stats_label.config(text=f"Level: {current_level} | XP: {current_xp} | HP: {current_hp}/100 | 🔥: {current_streak} | 🪙: {current_coins}")
+    stats_label.config(text=f"XP: {current_xp} | HP: {current_hp}/100 | 🔥: {current_streak} | 🪙: {current_coins}")
 
 def trigger_manual_save():
     userid = entry_userid.get().strip()
@@ -200,7 +209,6 @@ def unequip_item():
 
 # --- UI BUTTON HOOKS ---
 def click_start():
-    # Eng Chee's Anti-Spam Shield
     if timer.is_running:
         print("Timer is already active. Ignoring click.")
         return
@@ -221,7 +229,7 @@ def click_start():
                 pet_placeholder.config(image=study_img)
                 pet_placeholder.image = study_img
                 
-        timer.start_timer(window, timer_display, timer_status, complete_focus_session, trigger_manual_save)
+        timer.start_timer(window, timer_display, timer_status, complete_focus_session, trigger_manual_save, complete_break_session)
     except Exception as e:
         print(f"Timer started error: {e}")
 
@@ -279,7 +287,13 @@ def complete_focus_session():
     except Exception as e:
         print(f"Save error: {e}")
 
-# --- TASK 4: FRONTEND POPUP CONTROL (Lisha's Code) ---
+def complete_break_session():
+    chosen_pet = selected_pet.get()
+    default_img = Pet_Visual.get_pet_image(chosen_pet, "default", equipped_item)
+    if default_img:
+        pet_placeholder.config(image=default_img)
+        pet_placeholder.image = default_img
+
 def reset_progress():
     global current_xp, current_hp, current_streak, user_history, current_coins, owned_items, equipped_item
     
@@ -315,18 +329,21 @@ def open_progress_chart():
     if not userid:
         return
         
+    # Re-sync newest tracking details
     refreshed_data = popup.load_data(userid)
     history = refreshed_data.get("history", {}) if refreshed_data else user_history
 
     chart_window = tk.Toplevel(window)
     chart_window.title(f"{userid}'s Academic Progress")
-    chart_window.geometry("500x400")
+    chart_window.geometry("500x400") # Changed back to original size
     chart_window.configure(bg="#ADD8E6") 
 
+    # --- DYNAMIC & CORRECT WEEK ORDERING ---
     academic_weeks = [f"Week {i}" for i in range(1, 15)]
     
     if "Pre-Sem" in history:
         academic_weeks.insert(0, "Pre-Sem")
+        
     if "Post-Sem" in history:
         academic_weeks.append("Post-Sem")
         
@@ -334,10 +351,13 @@ def open_progress_chart():
         if key not in academic_weeks:
             academic_weeks.append(key)
 
+    # Extract corresponding values safely
     xp_values = [history.get(week, 0) for week in academic_weeks]
 
     fig, ax = plt.subplots(figsize=(6, 4), dpi=90, facecolor='#ADD8E6')
     ax.set_facecolor('#ADD8E6')
+    
+    # Draw bars using the clean academic_weeks names (no dates)
     ax.bar(academic_weeks, xp_values, color='#1E90FF', edgecolor='#00008B')
     
     ax.set_title("XP Earned per Academic Week", fontsize=12, fontweight='bold')
@@ -395,12 +415,11 @@ if bg_image:
     timer_bg_label = tk.Label(timer_frame, image=bg_image)
     timer_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Button(timer_frame, text="🛒 Shop", font=normal_font, command=show_shop).place(x=20, y=20)
-tk.Button(timer_frame, text="📶", font=normal_font, command=open_progress_chart, bg="#FFF8DC").place(x=130, y=20)
+tk.Button(timer_frame, text="🛒 Shop", font=normal_font, command=show_shop).place(x=480, y=20, anchor=tk.NE)
+tk.Button(timer_frame, text="📶", font=normal_font, command=open_progress_chart, bg="#FFF8DC").place(x=480, y=70, anchor=tk.NE)
 
 tk.Label(timer_frame, text="Focus", font=title_font, bg=bg_color).place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
-# Thana's new dynamic pet box!
 pet_box = tk.Frame(timer_frame, width=150, height=150, bg="white", relief="sunken", borderwidth=2)
 pet_box.place(relx=0.5, rely=0.43, anchor=tk.CENTER)
 pet_box.pack_propagate(False)
@@ -414,7 +433,7 @@ timer_status.place(relx=0.5, rely=0.23, anchor=tk.CENTER)
 timer_display = tk.Label(timer_frame, text="25:00", font=("Consolas", 40, "bold"), bg=bg_color, fg="#333333")
 timer_display.place(relx=0.5, rely=0.65, anchor=tk.CENTER)
 
-stats_label = tk.Label(timer_frame, text="Level: 0 | XP: 0 | HP: 100/100 | 🔥: 1 | 🪙: 0", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
+stats_label = tk.Label(timer_frame, text="XP: 0 | HP: 100/100 | 🔥: 1 | 🪙: 0", font=normal_font, bg="#F0F0F0", padx=10, pady=5, relief="groove")
 stats_label.place(relx=0.5, rely=0.76, anchor=tk.CENTER)
 
 tk.Button(timer_frame, text="Start", font=normal_font, width=8, command=click_start).place(relx=0.25, rely=0.85, anchor=tk.CENTER)
@@ -454,7 +473,7 @@ if bg_image:
     shop_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 tk.Label(shop_frame, text="Pet Shop", font=title_font, bg=bg_color).place(relx=0.5, rely=0.15, anchor=tk.CENTER)
-tk.Label(shop_frame, text="Welcome! Buy items for your pet.", font=normal_font, bg=bg_color).place(relx=0.5, rely=0.25, anchor=tk.CENTER)
+tk.Label(shop_frame, text="Welcome! Buy items for your pet.", font=normal_font, bg=bg_color).place(relx=0.5, rely=0.30, anchor=tk.CENTER)
 
 tk.Button(shop_frame, text="🎩 Top Hat (50 Coins)", font=normal_font, width=25, command=lambda: buy_item("Top Hat", 50)).place(relx=0.5, rely=0.4, anchor=tk.CENTER)
 tk.Button(shop_frame, text="👓 Cool Glasses (30 Coins)", font=normal_font, width=25, command=lambda: buy_item("Glasses", 30)).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
