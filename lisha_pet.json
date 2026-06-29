@@ -2,11 +2,16 @@
     "user id": "lisha",
     "pet name": "fluffy",
     "pet type": "Dog",
-    "current_xp": 10,
-    "current_hp": 90,
+    "current_xp": 50,
+    "current_hp": 100,
     "streak": 1,
+    "coins": 20,
+    "owned_items": [
+        "Glasses"
+    ],
+    "equipped_item": "Glasses",
     "last_login": "2026-06-24",
     "history": {
-        "Week 13": 10
+        "Week 13": 50
     }
 }
