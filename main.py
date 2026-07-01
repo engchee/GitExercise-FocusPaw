@@ -5,7 +5,7 @@ import os
 import json
 from datetime import datetime, timedelta
 
-# Matplotlib integration
+# bar chart integration
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -99,7 +99,7 @@ def show_timer():
     global current_xp, current_hp, current_streak, current_coins, owned_items, equipped_item, user_history
     
     userid = entry_userid.get().strip()
-    petname = entry_petname.get().strip()  # <--- Added this back!
+    petname = entry_petname.get().strip()  
     chosen_pet = selected_pet.get()
     
     # --- FIELD VALIDATION SHIELD ---
