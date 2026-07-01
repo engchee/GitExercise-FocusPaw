@@ -225,6 +225,18 @@ def unequip_item():
         print(f"Save error in shop: {e}")
 
 # --- UI BUTTON HOOKS ---
+def click_back_login():
+    setup_frame.place_forget()
+    login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+def click_logout():
+    # 1. Save the user's current progress before they leave
+    trigger_manual_save()
+    
+    # 2. Hide the timer page and go back to the Setup page
+    timer_frame.place_forget()
+    setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
 def click_logout():
     # 1. Save the user's current progress before they leave
     trigger_manual_save()
@@ -250,7 +262,7 @@ def click_logout():
     entry_userid.delete(0, tk.END)
     entry_petname.delete(0, tk.END)
     
-    # 5. Hide the focus page and go back to the Setup page
+    # 5. Hide the timer page and go back to the Setup page
     timer_frame.place_forget()
     setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
@@ -424,7 +436,7 @@ if bg_image:
     login_bg_label = tk.Label(login_frame, image=bg_image)
     login_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Button(login_frame, text="🌙", font=normal_font, command=toggle_dark_mode).place(x=20, y=20)
+tk.Button(login_frame, text="🌙", font=normal_font, command=toggle_dark_mode).place(x=490, y=10, anchor=tk.NE)
 tk.Label(login_frame, text="FocusPaw🐾", font=title_font, bg=bg_color).place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 tk.Button(login_frame, text="Login/Sign Up", font=button_font, width=15, height=2, command=show_setup).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
@@ -435,8 +447,21 @@ if bg_image:
     setup_bg_label = tk.Label(setup_frame, image=bg_image)
     setup_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=20, y=20)
-tk.Button(setup_frame, text="🌙", font=normal_font, command=toggle_dark_mode).place(x=70, y=20)
+tk.Button(setup_frame, text="🌙", font=normal_font, command=toggle_dark_mode).place(x=490, y=10, anchor=tk.NE)
+tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=490, y=60, anchor=tk.NE)
+back_button =tk.Button(setup_frame, text="⬅️", font=normal_font, command=click_back_login)
+back_button.place(x=10, y=490, anchor=tk.SW)
+
+# Hover Effect functions
+def on_enter(e):
+    back_button.config(text="Back")
+
+def on_leave(e):
+    back_button.config(text="⬅️")
+
+# Bind the mouse touch (Enter) and mouse leave (Leave) to the button
+back_button.bind('<Enter>', on_enter)
+back_button.bind('<Leave>', on_leave)
 
 tk.Label(setup_frame, text="Setup", font=title_font, bg=bg_color).place(relx=0.5, rely=0.22, anchor=tk.CENTER)
 tk.Label(setup_frame, text="User ID:", font=normal_font, bg=bg_color).place(relx=0.3, rely=0.35, anchor=tk.E)
