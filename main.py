@@ -79,17 +79,34 @@ def toggle_dark_mode():
         shop_bg_label.config(image=dark_bg_image)
         is_dark_mode = True
 
+# tracker to remember which page we came from
+came_from_timer = False
+
 def show_settings():
+    global came_from_timer
+    came_from_timer = False
     setup_frame.place_forget()
     settings_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
+def show_settings_from_timer():
+    global came_from_timer
+    came_from_timer = True
+    timer_frame.place_forget()
+    settings_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
 def save_settings_and_return():
+    global came_from_timer
     try:
         timer.apply_settings(mute_var.get(), focus_music_var.get(), break_music_var.get())
     except:
         pass
     settings_frame.place_forget()
-    setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    # return to the correct page
+    if came_from_timer:
+        timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    else:
+        setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 def show_setup():
     login_frame.place_forget()
@@ -208,6 +225,35 @@ def unequip_item():
         print(f"Save error in shop: {e}")
 
 # --- UI BUTTON HOOKS ---
+def click_logout():
+    # 1. Save the user's current progress before they leave
+    trigger_manual_save()
+    
+    # 2. Stop the timer and music completely if it is currently running
+    if timer.timer is not None:
+        window.after_cancel(timer.timer)
+        timer.timer = None
+    timer.is_running = False
+    timer.is_paused = False
+    timer.reps = 0
+    try:
+        import pygame
+        pygame.mixer.music.stop()
+    except:
+        pass
+        
+    # 3. Reset the timer text on the screen for the next time
+    timer_display.config(text="25:00")
+    timer_status.config(text="Ready to focus?", fg="blue")
+        
+    # 4. Clear the login text boxes so the next person starts fresh
+    entry_userid.delete(0, tk.END)
+    entry_petname.delete(0, tk.END)
+    
+    # 5. Hide the focus page and go back to the Setup page
+    timer_frame.place_forget()
+    setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
 def click_start():
     if timer.is_running:
         print("Timer is already active. Ignoring click.")
@@ -415,8 +461,31 @@ if bg_image:
     timer_bg_label = tk.Label(timer_frame, image=bg_image)
     timer_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Button(timer_frame, text="🛒 Shop", font=normal_font, command=show_shop).place(x=480, y=20, anchor=tk.NE)
-tk.Button(timer_frame, text="📶", font=normal_font, command=open_progress_chart, bg="#FFF8DC").place(x=480, y=70, anchor=tk.NE)
+# Menu Button 
+menu_button = tk.Menubutton(timer_frame, text="☰", font=normal_font, bg="#FFF8DC", relief="raised", cursor="hand2")
+menu_button.place(x=480, y=20, anchor=tk.NE)
+
+# Dropdown List
+dropdown_menu = tk.Menu(menu_button, tearoff=0, font=normal_font)
+menu_button.config(menu=dropdown_menu)
+
+# all the options inside the dropdown 
+dropdown_menu.add_command(label="🛒 Pet Shop", command=show_shop)
+dropdown_menu.add_command(label="🎵 Music Settings", command=show_settings_from_timer)
+dropdown_menu.add_command(label="📶 Progress Chart", command=open_progress_chart)
+dropdown_menu.add_separator() # divider line
+dropdown_menu.add_command(label="❌ Log Out", command=click_logout)
+
+# Hover Effect functions
+def on_enter(e):
+    menu_button.config(text="Menu")
+
+def on_leave(e):
+    menu_button.config(text="☰")
+
+# Bind the mouse touch (Enter) and mouse leave (Leave) to the button
+menu_button.bind('<Enter>', on_enter)
+menu_button.bind('<Leave>', on_leave)
 
 tk.Label(timer_frame, text="Focus", font=title_font, bg=bg_color).place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
