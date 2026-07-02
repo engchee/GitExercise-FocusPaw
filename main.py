@@ -29,6 +29,7 @@ window.geometry(f"{app_width}x{app_height}+{x}+{y}")
 
 # --- 2. FONTS & BACKGROUND ---
 title_font = tKFont.Font(family="Courier", size=46, weight="bold", slant="italic")
+subtitle_font = tKFont.Font(family="Courier", size=36, weight="bold", slant="italic")
 button_font = tKFont.Font(family="Consolas", size=25, weight="bold")
 normal_font = tKFont.Font(family="Consolas", size=14)
 
@@ -156,6 +157,7 @@ def show_timer():
 def update_stats_ui():
     current_level = game_math.get_level(current_xp)
     stats_label.config(text=f"XP: {current_xp} | HP: {current_hp}/100 | 🔥: {current_streak} | 🪙: {current_coins}")
+    shop_coin_label.config(text=f"🪙 : {current_coins}")
 
 def trigger_manual_save():
     userid = entry_userid.get().strip()
@@ -499,13 +501,13 @@ tk.Button(
     fg="#D8000C"
 ).place(relx=0.5, rely=0.94, anchor=tk.CENTER)
 
-#----------------------FRAME 4: SETTINGS-----------------------
+#----------------------FRAME 4: MUSIC SETTINGS-----------------------
 settings_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
     settings_bg_label = tk.Label(settings_frame, image=bg_image)
     settings_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Label(settings_frame, text="Settings", font=title_font, bg=bg_color).place(relx=0.5, rely=0.15, anchor=tk.CENTER)
+tk.Label(settings_frame, text="Music\nSettings", font=subtitle_font, bg=bg_color).place(relx=0.5, rely=0.15, anchor=tk.CENTER)
 
 tk.Checkbutton(settings_frame, text="Mute Background Music", variable=mute_var, font=normal_font, bg=bg_color).place(relx=0.3, rely=0.35, anchor=tk.W)
 
@@ -521,7 +523,11 @@ if bg_image:
     shop_bg_label = tk.Label(shop_frame, image=bg_image)
     shop_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Label(shop_frame, text="Pet Shop", font=title_font, bg=bg_color).place(relx=0.5, rely=0.15, anchor=tk.CENTER)
+# Coin display box 
+shop_coin_label = tk.Label(shop_frame, text="🪙 : 0", font=normal_font, bg="#F0F0F0", padx=10, pady=2, relief="groove")
+shop_coin_label.place(x=490, y=10, anchor=tk.NE)
+
+tk.Label(shop_frame, text="Pet Shop", font=title_font, bg=bg_color).place(relx=0.5, rely=0.18, anchor=tk.CENTER)
 tk.Label(shop_frame, text="Welcome! Buy items for your pet.", font=normal_font, bg=bg_color).place(relx=0.5, rely=0.30, anchor=tk.CENTER)
 
 tk.Button(shop_frame, text="🎩 Top Hat (50 Coins)", font=normal_font, width=25, command=lambda: buy_item("Top Hat", 50)).place(relx=0.5, rely=0.4, anchor=tk.CENTER)
