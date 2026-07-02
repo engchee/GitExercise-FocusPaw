@@ -5,10 +5,6 @@ import os
 import json
 from datetime import datetime, timedelta
 
-# bar chart integration
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
 # --- IMPORT HELPER MODULES ---
 import Pet_Visual
 import game_math
@@ -382,53 +378,12 @@ def reset_progress():
         update_stats_ui()
         print(f"All progress wiped for {userid}.")
 
-def open_progress_chart():
+def trigger_progress_chart():
     userid = entry_userid.get().strip()
     if not userid:
         return
-        
-    # Re-sync newest tracking details
-    refreshed_data = popup.load_data(userid)
-    history = refreshed_data.get("history", {}) if refreshed_data else user_history
-
-    chart_window = tk.Toplevel(window)
-    chart_window.title(f"{userid}'s Academic Progress")
-    chart_window.geometry("500x400") # Changed back to original size
-    chart_window.configure(bg="#ADD8E6") 
-
-    # --- DYNAMIC & CORRECT WEEK ORDERING ---
-    academic_weeks = [f"Week {i}" for i in range(1, 15)]
-    
-    if "Pre-Sem" in history:
-        academic_weeks.insert(0, "Pre-Sem")
-        
-    if "Post-Sem" in history:
-        academic_weeks.append("Post-Sem")
-        
-    for key in history.keys():
-        if key not in academic_weeks:
-            academic_weeks.append(key)
-
-    # Extract corresponding values safely
-    xp_values = [history.get(week, 0) for week in academic_weeks]
-
-    fig, ax = plt.subplots(figsize=(6, 4), dpi=90, facecolor='#ADD8E6')
-    ax.set_facecolor('#ADD8E6')
-    
-    # Draw bars using the clean academic_weeks names (no dates)
-    ax.bar(academic_weeks, xp_values, color='#1E90FF', edgecolor='#00008B')
-    
-    ax.set_title("XP Earned per Academic Week", fontsize=12, fontweight='bold')
-    ax.set_xlabel("Academic Cycle Weeks", fontsize=10)
-    ax.set_ylabel("XP Gains Balance", fontsize=10)
-    
-    plt.xticks(rotation=45, ha="right", fontsize=8)
-    plt.tight_layout()
-
-    canvas = FigureCanvasTkAgg(fig, master=chart_window)
-    canvas.draw()
-    canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-    canvas.get_tk_widget().configure(bg="#ADD8E6")
+    # Send the data over to the popup 
+    popup.open_progress_chart(userid, window, user_history)
 
 #----------------------FRAME 1: LOGIN-----------------------
 login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
@@ -497,7 +452,7 @@ menu_button.config(menu=dropdown_menu)
 # all the options inside the dropdown 
 dropdown_menu.add_command(label="🛒 Pet Shop", command=show_shop)
 dropdown_menu.add_command(label="🎵 Music Settings", command=show_settings_from_timer)
-dropdown_menu.add_command(label="📶 Progress Chart", command=open_progress_chart)
+dropdown_menu.add_command(label="📶 Progress Chart", command=trigger_progress_chart)
 dropdown_menu.add_separator() # divider line
 dropdown_menu.add_command(label="❌ Log Out", command=click_logout)
 
