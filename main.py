@@ -260,18 +260,10 @@ def click_back_login():
     login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 def click_logout():
-    # 1. Save the user's current progress before they leave
+    # Save the user's current progress before they leave
     trigger_manual_save()
     
-    # 2. Hide the timer page and go back to the Setup page
-    timer_frame.place_forget()
-    setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-
-def click_logout():
-    # 1. Save the user's current progress before they leave
-    trigger_manual_save()
-    
-    # 2. Stop the timer and music completely if it is currently running
+    # Stop the timer and music completely if it is currently running
     if timer.timer is not None:
         window.after_cancel(timer.timer)
         timer.timer = None
@@ -284,15 +276,21 @@ def click_logout():
     except:
         pass
         
-    # 3. Reset the timer text on the screen for the next time
+    # Reset the timer text on the screen for the next time
     timer_display.config(text="25:00")
     timer_status.config(text="Ready to focus?", fg="blue")
         
-    # 4. Clear the login text boxes so the next person starts fresh
+    # Clear the login text boxes so the next person starts fresh
     entry_userid.delete(0, tk.END)
     entry_petname.delete(0, tk.END)
     
-    # 5. Hide the timer page and go back to the Setup page
+    # Reset the Pet and Music selections back to defaults
+    selected_pet.set("Cat")
+    focus_music_var.set("Options")
+    break_music_var.set("Options")
+    mute_var.set(False)
+    
+    # Hide the timer page and go back to the Setup page
     timer_frame.place_forget()
     setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
