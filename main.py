@@ -166,7 +166,25 @@ def trigger_manual_save():
     popup.save_data(userid, petname, chosen_pet, current_xp, current_hp, current_streak, current_coins, owned_items, equipped_item, xp_earned_now=0)
 
 # --- SHOP LOGIC ---
+def refresh_shop_ui():
+    """Updates the shop button text based on what the user already owns."""
+    if "Top Hat" in owned_items:
+        btn_top_hat.config(text="🎩 Wearing Top Hat")
+    else:
+        btn_top_hat.config(text="🎩 Top Hat (50 Coins)")
+        
+    if "Glasses" in owned_items:
+        btn_glasses.config(text="👓 Wearing Cool Glasses")
+    else:
+        btn_glasses.config(text="👓 Cool Glasses (30 Coins)")
+        
+    if "Bowtie" in owned_items:
+        btn_bowtie.config(text="🎀 Wearing Cute Bowtie")
+    else:
+        btn_bowtie.config(text="🎀 Cute Bowtie (20 Coins)")
+
 def show_shop():
+    refresh_shop_ui()
     timer_frame.place_forget()
     shop_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
@@ -175,18 +193,25 @@ def leave_shop():
     timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 def buy_item(item_name, price):
-    global current_coins, equipped_item
+    global current_coins, equipped_item, owned_items
     chosen_pet = selected_pet.get()
     
-    if item_name in owned_items:
-        print(f"You already own {item_name}! Equipping it now.")
-        equipped_item = item_name
-    elif current_coins >= price:
+    if item_name == equipped_item:
+        print(f"You are already wearing {item_name}!")
+        return
+        
+    if current_coins >= price:
         print(f"Bought {item_name}!")
         current_coins -= price
+        
+        # Delete the old item to make them 1-time use
+        if equipped_item and equipped_item in owned_items:
+            owned_items.remove(equipped_item)
+            
         owned_items.append(item_name)
         equipped_item = item_name
         update_stats_ui() 
+        refresh_shop_ui() 
     else:
         print(f"Not enough coins! You need {price} but only have {current_coins}.")
         return
@@ -202,20 +227,27 @@ def buy_item(item_name, price):
         print(f"Save error in shop: {e}")
 
 def unequip_item():
-    global equipped_item
+    global equipped_item, owned_items
     chosen_pet = selected_pet.get()
     
     if equipped_item is None:
         print("Your pet isn't wearing anything!")
         return
         
-    print(f"Removed {equipped_item}!")
-    equipped_item = None
+    print(f"Removed and consumed {equipped_item}!")
+    
+    # Permanently delete the item when taken off
+    if equipped_item in owned_items:
+        owned_items.remove(equipped_item)
+        
+    equipped_item = None 
     
     new_image = Pet_Visual.get_pet_image(chosen_pet, "default", equipped_item)
     if new_image:
         pet_placeholder.config(image=new_image)
         pet_placeholder.image = new_image
+        
+    refresh_shop_ui()
         
     try:
         popup.save_data(entry_userid.get(), entry_petname.get(), chosen_pet, current_xp, current_hp, current_streak, current_coins, owned_items, equipped_item)
@@ -530,11 +562,16 @@ shop_coin_label.place(x=490, y=10, anchor=tk.NE)
 tk.Label(shop_frame, text="Pet Shop", font=title_font, bg=bg_color).place(relx=0.5, rely=0.18, anchor=tk.CENTER)
 tk.Label(shop_frame, text="Welcome! Buy items for your pet.", font=normal_font, bg=bg_color).place(relx=0.5, rely=0.30, anchor=tk.CENTER)
 
-tk.Button(shop_frame, text="🎩 Top Hat (50 Coins)", font=normal_font, width=25, command=lambda: buy_item("Top Hat", 50)).place(relx=0.5, rely=0.4, anchor=tk.CENTER)
-tk.Button(shop_frame, text="👓 Cool Glasses (30 Coins)", font=normal_font, width=25, command=lambda: buy_item("Glasses", 30)).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-tk.Button(shop_frame, text="🎀 Cute Bowtie (20 Coins)", font=normal_font, width=25, command=lambda: buy_item("Bowtie", 20)).place(relx=0.5, rely=0.6, anchor=tk.CENTER)
-tk.Button(shop_frame, text="🚫 Remove Item", font=normal_font, width=25, command=unequip_item).place(relx=0.5, rely=0.7, anchor=tk.CENTER)
+btn_top_hat = tk.Button(shop_frame, text="🎩 Top Hat (50 Coins)", font=normal_font, width=25, command=lambda: buy_item("Top Hat", 50))
+btn_top_hat.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
 
+btn_glasses = tk.Button(shop_frame, text="👓 Cool Glasses (30 Coins)", font=normal_font, width=25, command=lambda: buy_item("Glasses", 30))
+btn_glasses.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+btn_bowtie = tk.Button(shop_frame, text="🎀 Cute Bowtie (20 Coins)", font=normal_font, width=25, command=lambda: buy_item("Bowtie", 20))
+btn_bowtie.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+
+tk.Button(shop_frame, text="🚫 Remove Item", font=normal_font, width=25, command=unequip_item).place(relx=0.5, rely=0.7, anchor=tk.CENTER)
 tk.Button(shop_frame, text="Back to Focus", font=normal_font, width=15, command=leave_shop).place(relx=0.5, rely=0.8, anchor=tk.CENTER)
 
 # --- START APP ---

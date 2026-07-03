@@ -1,0 +1,18 @@
+{
+    "user id": "Dhacha",
+    "pet name": "max",
+    "pet type": "Dog",
+    "current_xp": 60,
+    "current_hp": 100,
+    "streak": 1,
+    "coins": 10,
+    "owned_items": [
+        "Bowtie",
+        "Glasses"
+    ],
+    "equipped_item": "Bowtie",
+    "last_login": "2026-07-03",
+    "history": {
+        "Week 14": 60
+    }
+}
