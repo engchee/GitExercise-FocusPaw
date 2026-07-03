@@ -11,14 +11,14 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 def get_file_path(userid):
-    """Generates the file path based on the provided User ID."""
+    #Generates the file path based on the provided User ID.
     if not userid:
         return None
     return os.path.join(script_dir, f"{userid}_pet.json")
 
 # --- ACADEMIC WEEK CALCULATION ---
 def get_academic_week():
-    """Calculates the current academic week based on a semester start date."""
+    #Calculates the current academic week based on a semester start date.
     try:
         semester_start = datetime.strptime("2026-03-30", "%Y-%m-%d").date() 
         today = date.today()
@@ -54,7 +54,7 @@ def calculate_streak(saved_date_str, current_streak):
 
 # --- PARAMETERIZED CRUD FUNCTIONS ---
 def load_data(userid):
-    """Loads user data, calculates updated streak, and returns stats."""
+    #Loads user data, calculates updated streak, and returns stats.
     path = get_file_path(userid)
     if path and os.path.exists(path):
         try:
@@ -76,7 +76,7 @@ def load_data(userid):
     return None
 
 def save_data(userid, petname, pet_type, current_xp, current_hp, streak, coins, owned_items, equipped_item, xp_earned_now=0):
-    """Accepts variables and saves/updates the JSON file with history logs and shop items."""
+    #Accepts variables and saves/updates the JSON file with history logs and shop items.
     if not userid:
         print("Error: Cannot save without a User ID.")
         return
@@ -125,7 +125,7 @@ def save_data(userid, petname, pet_type, current_xp, current_hp, streak, coins, 
 
 # --- TASK 1 & 2: BACKEND FILE DELETION ---
 def delete_data(userid):
-    """Permanently deletes the JSON data file for the given User ID."""
+    #Permanently deletes the JSON data file for the given User ID.
     path = get_file_path(userid)
     if path:
         try:

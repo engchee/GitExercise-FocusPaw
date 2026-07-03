@@ -5,11 +5,8 @@ from PIL import Image, ImageTk
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 def get_pet_image(pet_type, state, equipped_item=None):
-    """
-    Loads the requested pet image based on its state and what it is wearing.
-    """
+    #Loads the requested pet image based on its state and what it is wearing.
     # 1. Base names without the ".jpeg"
-    # Note: I changed "puppy" to "dog" here to match your new file names!
     file_names = {
         "Cat": {"default": "cat", "studying": "cat_studying", "crying": "cat_crying", "resting": "cat_resting"},
         "Dog": {"default": "dog", "studying": "dog_studying", "crying": "dog_crying", "resting": "dog_resting"},
@@ -47,7 +44,7 @@ def get_pet_image(pet_type, state, equipped_item=None):
         return None
 
 def get_background_image(app_width, app_height):
-    """Loads and resizes the standard background image."""
+    #Loads and resizes the standard background image.
     try:
         bg_path = os.path.join(script_dir, "background.jpeg")
         original_img = Image.open(bg_path)
@@ -58,7 +55,7 @@ def get_background_image(app_width, app_height):
         return None 
 
 def get_dark_background_image(app_width, app_height):
-    """Loads and resizes the dark mode background image."""
+    #Loads and resizes the dark mode background image.
     try:
         bg_path = os.path.join(script_dir, "background (dark mode).png")
         original_img = Image.open(bg_path)
