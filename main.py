@@ -5,10 +5,6 @@ import os
 import json
 from datetime import datetime, timedelta
 
-# Matplotlib integration
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
 # --- IMPORT HELPER MODULES ---
 import Pet_Visual
 import game_math
@@ -33,6 +29,7 @@ window.geometry(f"{app_width}x{app_height}+{x}+{y}")
 
 # --- 2. FONTS & BACKGROUND ---
 title_font = tKFont.Font(family="Courier", size=46, weight="bold", slant="italic")
+subtitle_font = tKFont.Font(family="Courier", size=36, weight="bold", slant="italic")
 button_font = tKFont.Font(family="Consolas", size=25, weight="bold")
 normal_font = tKFont.Font(family="Consolas", size=14)
 
@@ -79,17 +76,34 @@ def toggle_dark_mode():
         shop_bg_label.config(image=dark_bg_image)
         is_dark_mode = True
 
+# tracker to remember which page we came from
+came_from_timer = False
+
 def show_settings():
+    global came_from_timer
+    came_from_timer = False
     setup_frame.place_forget()
     settings_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
+def show_settings_from_timer():
+    global came_from_timer
+    came_from_timer = True
+    timer_frame.place_forget()
+    settings_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
 def save_settings_and_return():
+    global came_from_timer
     try:
         timer.apply_settings(mute_var.get(), focus_music_var.get(), break_music_var.get())
     except:
         pass
     settings_frame.place_forget()
-    setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    # return to the correct page
+    if came_from_timer:
+        timer_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    else:
+        setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 def show_setup():
     login_frame.place_forget()
@@ -99,7 +113,7 @@ def show_timer():
     global current_xp, current_hp, current_streak, current_coins, owned_items, equipped_item, user_history
     
     userid = entry_userid.get().strip()
-    petname = entry_petname.get().strip()  # <--- Added this back!
+    petname = entry_petname.get().strip()  
     chosen_pet = selected_pet.get()
     
     # --- FIELD VALIDATION SHIELD ---
@@ -143,6 +157,7 @@ def show_timer():
 def update_stats_ui():
     current_level = game_math.get_level(current_xp)
     stats_label.config(text=f"XP: {current_xp} | HP: {current_hp}/100 | 🔥: {current_streak} | 🪙: {current_coins}")
+    shop_coin_label.config(text=f"🪙 : {current_coins}")
 
 def trigger_manual_save():
     userid = entry_userid.get().strip()
@@ -208,6 +223,47 @@ def unequip_item():
         print(f"Save error in shop: {e}")
 
 # --- UI BUTTON HOOKS ---
+def click_back_login():
+    setup_frame.place_forget()
+    login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+def click_logout():
+    # 1. Save the user's current progress before they leave
+    trigger_manual_save()
+    
+    # 2. Hide the timer page and go back to the Setup page
+    timer_frame.place_forget()
+    setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+def click_logout():
+    # 1. Save the user's current progress before they leave
+    trigger_manual_save()
+    
+    # 2. Stop the timer and music completely if it is currently running
+    if timer.timer is not None:
+        window.after_cancel(timer.timer)
+        timer.timer = None
+    timer.is_running = False
+    timer.is_paused = False
+    timer.reps = 0
+    try:
+        import pygame
+        pygame.mixer.music.stop()
+    except:
+        pass
+        
+    # 3. Reset the timer text on the screen for the next time
+    timer_display.config(text="25:00")
+    timer_status.config(text="Ready to focus?", fg="blue")
+        
+    # 4. Clear the login text boxes so the next person starts fresh
+    entry_userid.delete(0, tk.END)
+    entry_petname.delete(0, tk.END)
+    
+    # 5. Hide the timer page and go back to the Setup page
+    timer_frame.place_forget()
+    setup_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
 def click_start():
     if timer.is_running:
         print("Timer is already active. Ignoring click.")
@@ -324,53 +380,12 @@ def reset_progress():
         update_stats_ui()
         print(f"All progress wiped for {userid}.")
 
-def open_progress_chart():
+def trigger_progress_chart():
     userid = entry_userid.get().strip()
     if not userid:
         return
-        
-    # Re-sync newest tracking details
-    refreshed_data = popup.load_data(userid)
-    history = refreshed_data.get("history", {}) if refreshed_data else user_history
-
-    chart_window = tk.Toplevel(window)
-    chart_window.title(f"{userid}'s Academic Progress")
-    chart_window.geometry("500x400") # Changed back to original size
-    chart_window.configure(bg="#ADD8E6") 
-
-    # --- DYNAMIC & CORRECT WEEK ORDERING ---
-    academic_weeks = [f"Week {i}" for i in range(1, 15)]
-    
-    if "Pre-Sem" in history:
-        academic_weeks.insert(0, "Pre-Sem")
-        
-    if "Post-Sem" in history:
-        academic_weeks.append("Post-Sem")
-        
-    for key in history.keys():
-        if key not in academic_weeks:
-            academic_weeks.append(key)
-
-    # Extract corresponding values safely
-    xp_values = [history.get(week, 0) for week in academic_weeks]
-
-    fig, ax = plt.subplots(figsize=(6, 4), dpi=90, facecolor='#ADD8E6')
-    ax.set_facecolor('#ADD8E6')
-    
-    # Draw bars using the clean academic_weeks names (no dates)
-    ax.bar(academic_weeks, xp_values, color='#1E90FF', edgecolor='#00008B')
-    
-    ax.set_title("XP Earned per Academic Week", fontsize=12, fontweight='bold')
-    ax.set_xlabel("Academic Cycle Weeks", fontsize=10)
-    ax.set_ylabel("XP Gains Balance", fontsize=10)
-    
-    plt.xticks(rotation=45, ha="right", fontsize=8)
-    plt.tight_layout()
-
-    canvas = FigureCanvasTkAgg(fig, master=chart_window)
-    canvas.draw()
-    canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-    canvas.get_tk_widget().configure(bg="#ADD8E6")
+    # Send the data over to the popup 
+    popup.open_progress_chart(userid, window, user_history)
 
 #----------------------FRAME 1: LOGIN-----------------------
 login_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
@@ -378,7 +393,7 @@ if bg_image:
     login_bg_label = tk.Label(login_frame, image=bg_image)
     login_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Button(login_frame, text="🌙", font=normal_font, command=toggle_dark_mode).place(x=20, y=20)
+tk.Button(login_frame, text="🌙", font=normal_font, command=toggle_dark_mode).place(x=490, y=10, anchor=tk.NE)
 tk.Label(login_frame, text="FocusPaw🐾", font=title_font, bg=bg_color).place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 tk.Button(login_frame, text="Login/Sign Up", font=button_font, width=15, height=2, command=show_setup).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 login_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
@@ -389,8 +404,21 @@ if bg_image:
     setup_bg_label = tk.Label(setup_frame, image=bg_image)
     setup_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=20, y=20)
-tk.Button(setup_frame, text="🌙", font=normal_font, command=toggle_dark_mode).place(x=70, y=20)
+tk.Button(setup_frame, text="🌙", font=normal_font, command=toggle_dark_mode).place(x=490, y=10, anchor=tk.NE)
+tk.Button(setup_frame, text="🎵", font=normal_font, command=show_settings).place(x=490, y=60, anchor=tk.NE)
+back_button =tk.Button(setup_frame, text="⬅️", font=normal_font, command=click_back_login)
+back_button.place(x=10, y=490, anchor=tk.SW)
+
+# Hover Effect functions
+def on_enter(e):
+    back_button.config(text="Back")
+
+def on_leave(e):
+    back_button.config(text="⬅️")
+
+# Bind the mouse touch (Enter) and mouse leave (Leave) to the button
+back_button.bind('<Enter>', on_enter)
+back_button.bind('<Leave>', on_leave)
 
 tk.Label(setup_frame, text="Setup", font=title_font, bg=bg_color).place(relx=0.5, rely=0.22, anchor=tk.CENTER)
 tk.Label(setup_frame, text="User ID:", font=normal_font, bg=bg_color).place(relx=0.3, rely=0.35, anchor=tk.E)
@@ -415,8 +443,31 @@ if bg_image:
     timer_bg_label = tk.Label(timer_frame, image=bg_image)
     timer_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Button(timer_frame, text="🛒 Shop", font=normal_font, command=show_shop).place(x=480, y=20, anchor=tk.NE)
-tk.Button(timer_frame, text="📶", font=normal_font, command=open_progress_chart, bg="#FFF8DC").place(x=480, y=70, anchor=tk.NE)
+# Menu Button 
+menu_button = tk.Menubutton(timer_frame, text="☰", font=normal_font, bg="#FFF8DC", relief="raised", cursor="hand2")
+menu_button.place(x=480, y=20, anchor=tk.NE)
+
+# Dropdown List
+dropdown_menu = tk.Menu(menu_button, tearoff=0, font=normal_font)
+menu_button.config(menu=dropdown_menu)
+
+# all the options inside the dropdown 
+dropdown_menu.add_command(label="🛒 Pet Shop", command=show_shop)
+dropdown_menu.add_command(label="🎵 Music Settings", command=show_settings_from_timer)
+dropdown_menu.add_command(label="📶 Progress Chart", command=trigger_progress_chart)
+dropdown_menu.add_separator() # divider line
+dropdown_menu.add_command(label="❌ Log Out", command=click_logout)
+
+# Hover Effect functions
+def on_enter(e):
+    menu_button.config(text="Menu")
+
+def on_leave(e):
+    menu_button.config(text="☰")
+
+# Bind the mouse touch (Enter) and mouse leave (Leave) to the button
+menu_button.bind('<Enter>', on_enter)
+menu_button.bind('<Leave>', on_leave)
 
 tk.Label(timer_frame, text="Focus", font=title_font, bg=bg_color).place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
@@ -450,13 +501,13 @@ tk.Button(
     fg="#D8000C"
 ).place(relx=0.5, rely=0.94, anchor=tk.CENTER)
 
-#----------------------FRAME 4: SETTINGS-----------------------
+#----------------------FRAME 4: MUSIC SETTINGS-----------------------
 settings_frame = tk.Frame(window, width=500, height=500, bg=bg_color)
 if bg_image:
     settings_bg_label = tk.Label(settings_frame, image=bg_image)
     settings_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Label(settings_frame, text="Settings", font=title_font, bg=bg_color).place(relx=0.5, rely=0.15, anchor=tk.CENTER)
+tk.Label(settings_frame, text="Music\nSettings", font=subtitle_font, bg=bg_color).place(relx=0.5, rely=0.15, anchor=tk.CENTER)
 
 tk.Checkbutton(settings_frame, text="Mute Background Music", variable=mute_var, font=normal_font, bg=bg_color).place(relx=0.3, rely=0.35, anchor=tk.W)
 
@@ -472,7 +523,11 @@ if bg_image:
     shop_bg_label = tk.Label(shop_frame, image=bg_image)
     shop_bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-tk.Label(shop_frame, text="Pet Shop", font=title_font, bg=bg_color).place(relx=0.5, rely=0.15, anchor=tk.CENTER)
+# Coin display box 
+shop_coin_label = tk.Label(shop_frame, text="🪙 : 0", font=normal_font, bg="#F0F0F0", padx=10, pady=2, relief="groove")
+shop_coin_label.place(x=490, y=10, anchor=tk.NE)
+
+tk.Label(shop_frame, text="Pet Shop", font=title_font, bg=bg_color).place(relx=0.5, rely=0.18, anchor=tk.CENTER)
 tk.Label(shop_frame, text="Welcome! Buy items for your pet.", font=normal_font, bg=bg_color).place(relx=0.5, rely=0.30, anchor=tk.CENTER)
 
 tk.Button(shop_frame, text="🎩 Top Hat (50 Coins)", font=normal_font, width=25, command=lambda: buy_item("Top Hat", 50)).place(relx=0.5, rely=0.4, anchor=tk.CENTER)

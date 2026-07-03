@@ -2,6 +2,11 @@ import json
 import os
 from datetime import date, datetime
 
+import tkinter as tk
+#bar chart imports
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 # --- FILE PATH SETUP ---
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -131,3 +136,60 @@ def delete_data(userid):
             print(f"Error deleting data safely for {userid}: {e}")
             return False
     return False
+
+# --- PROGRESS CHART VISUALIZATION ---
+def open_progress_chart(userid, parent_window, fallback_history):
+    if not userid:
+        return
+        
+    # Re-sync newest tracking details
+    refreshed_data = load_data(userid)
+    history = refreshed_data.get("history", {}) if refreshed_data else fallback_history
+
+    chart_window = tk.Toplevel(parent_window)
+    chart_window.title(f"{userid}'s Academic Progress")
+    chart_window.geometry("500x400") 
+    chart_window.configure(bg="#ADD8E6") 
+
+    # --- DYNAMIC & CORRECT WEEK ORDERING ---
+    academic_weeks = [f"Week {i}" for i in range(1, 15)]
+    
+    if "Pre-Sem" in history:
+        academic_weeks.insert(0, "Pre-Sem")
+        
+    if "Post-Sem" in history:
+        academic_weeks.append("Post-Sem")
+        
+    for key in history.keys():
+        if key not in academic_weeks:
+            academic_weeks.append(key)
+
+    # Extract corresponding values safely
+    xp_values = [history.get(week, 0) for week in academic_weeks]
+    
+    # Find the highest XP value to know how tall to make the graph
+    max_xp = max(xp_values) if xp_values else 0
+
+    fig, ax = plt.subplots(figsize=(6, 4), dpi=90, facecolor='#ADD8E6')
+    ax.set_facecolor('#ADD8E6')
+    
+    # Draw bars using the clean academic_weeks names
+    ax.bar(academic_weeks, xp_values, color='#1E90FF', edgecolor='#00008B')
+    
+    ax.set_title("XP Earned per Academic Week", fontsize=12, fontweight='bold')
+    ax.set_xlabel("Academic Cycle Weeks", fontsize=10)
+    ax.set_ylabel("XP Gains Balance", fontsize=10)
+
+    # Set the bottom to 0, and the roof to at least 10
+    ax.set_ylim(bottom=0, top=max(10, max_xp + 5)) 
+    
+    # Force the ticks on the side to count by exactly 10
+    ax.set_yticks(range(0, max(10, max_xp + 15), 10))
+    
+    plt.xticks(rotation=45, ha="right", fontsize=8)
+    plt.tight_layout()
+
+    canvas = FigureCanvasTkAgg(fig, master=chart_window)
+    canvas.draw()
+    canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+    canvas.get_tk_widget().configure(bg="#ADD8E6")
