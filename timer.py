@@ -67,8 +67,8 @@ def start_timer(window, timer_text_label, status_label, callback=None, on_save=N
             except:
                 print("Background music file not found!")
                 
-        # break_sec = break_min * 60
-        break_sec = 5
+        break_sec = break_min * 60
+        #break_sec = 5                #test project
         count_down(break_sec, window, timer_text_label, status_label)
     else:
         print("Timer started!(˶ˆᗜˆ˵)")
@@ -81,8 +81,8 @@ def start_timer(window, timer_text_label, status_label, callback=None, on_save=N
             except:
                 print("Background music file not found!")
                 
-        # work_sec = work_min * 60
-        work_sec = 5
+        work_sec = work_min * 60
+        #work_sec = 5                #test project
         count_down(work_sec, window, timer_text_label, status_label)
 
 paused_count = 0
