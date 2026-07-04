@@ -1,17 +1,13 @@
 {
     "user id": "lisha",
     "pet name": "fluffy",
-    "pet type": "Dog",
-    "current_xp": 50,
+    "pet type": "Cat",
+    "current_xp": 0,
     "current_hp": 100,
     "streak": 1,
-    "coins": 20,
-    "owned_items": [
-        "Glasses"
-    ],
-    "equipped_item": "Glasses",
-    "last_login": "2026-06-24",
-    "history": {
-        "Week 13": 50
-    }
+    "coins": 0,
+    "owned_items": [],
+    "equipped_item": null,
+    "last_login": "2026-06-29",
+    "history": {}
 }
