@@ -8,6 +8,13 @@
     "coins": 0,
     "owned_items": [],
     "equipped_item": null,
+<<<<<<< HEAD
     "last_login": "2026-06-29",
     "history": {}
+=======
+    "last_login": "2026-07-03",
+    "history": {
+        "Week 13": 10
+    }
+>>>>>>> 865a4731a1eac0f5e2d8b3131822bffcbc576b59
 }

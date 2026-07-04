@@ -1,13 +1,15 @@
 {
-    "user id": "thana",
-    "pet name": "tom",
-    "pet type": "Cat",
-    "current_xp": 0,
+    "user id": "tanusha",
+    "pet name": "daisy",
+    "pet type": "Dog",
+    "current_xp": 70,
     "current_hp": 100,
     "streak": 1,
     "coins": 0,
     "owned_items": [],
     "equipped_item": null,
     "last_login": "2026-07-03",
-    "history": {}
+    "history": {
+        "Week 14": 70
+    }
 }
