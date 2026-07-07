@@ -274,7 +274,7 @@ def click_logout():
         import pygame
         pygame.mixer.music.stop()
     except:
-        pass
+        pass   #if got error, ignore it (pygame not insralled or music not playing)
         
     # Reset the timer text on the screen for the next time
     timer_display.config(text="25:00")
